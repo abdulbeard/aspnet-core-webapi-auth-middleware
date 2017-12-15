@@ -1,0 +1,11 @@
+C:\Users\az185030\source\repos\TokenAuth\TokenAuth\bin\Debug\netcoreapp2.0\TokenAuth.deps.json
+C:\Users\az185030\source\repos\TokenAuth\TokenAuth\bin\Debug\netcoreapp2.0\TokenAuth.runtimeconfig.json
+C:\Users\az185030\source\repos\TokenAuth\TokenAuth\bin\Debug\netcoreapp2.0\TokenAuth.runtimeconfig.dev.json
+C:\Users\az185030\source\repos\TokenAuth\TokenAuth\bin\Debug\netcoreapp2.0\TokenAuth.dll
+C:\Users\az185030\source\repos\TokenAuth\TokenAuth\bin\Debug\netcoreapp2.0\TokenAuth.pdb
+C:\Users\az185030\source\repos\TokenAuth\TokenAuth\obj\Debug\netcoreapp2.0\TokenAuth.csprojResolveAssemblyReference.cache
+C:\Users\az185030\source\repos\TokenAuth\TokenAuth\obj\Debug\netcoreapp2.0\TokenAuth.csproj.CoreCompileInputs.cache
+C:\Users\az185030\source\repos\TokenAuth\TokenAuth\obj\Debug\netcoreapp2.0\TokenAuth.AssemblyInfoInputs.cache
+C:\Users\az185030\source\repos\TokenAuth\TokenAuth\obj\Debug\netcoreapp2.0\TokenAuth.AssemblyInfo.cs
+C:\Users\az185030\source\repos\TokenAuth\TokenAuth\obj\Debug\netcoreapp2.0\TokenAuth.dll
+C:\Users\az185030\source\repos\TokenAuth\TokenAuth\obj\Debug\netcoreapp2.0\TokenAuth.pdb
