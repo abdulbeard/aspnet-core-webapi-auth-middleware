@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
 namespace TokenAuth.Config
@@ -59,7 +57,7 @@ namespace TokenAuth.Config
 
         public override Task<Claim> GetClaimAsync(Type type = null, string content = null)
         {
-            if(content == null)
+            if (content == null)
             {
                 return null;
             }
@@ -83,7 +81,7 @@ namespace TokenAuth.Config
 
         public override Task<Claim> GetClaimAsync(Type type = null, string content = null)
         {
-            if(type == null || TypeExtraction == null)
+            if (type == null || TypeExtraction == null)
             {
                 return null;
             }
@@ -100,7 +98,7 @@ namespace TokenAuth.Config
     public class RouteClaimsConfig
     {
         public IList<ClaimsExtractionConfig> ExtractionConfigs { get; set; }
-        public ClaimsValidationConfig ValidationConfig { get; set; }        
+        public ClaimsValidationConfig ValidationConfig { get; set; }
     }
 
     public enum ClaimLocation

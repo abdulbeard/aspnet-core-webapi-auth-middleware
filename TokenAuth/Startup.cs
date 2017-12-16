@@ -29,9 +29,9 @@ namespace TokenAuth
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddAuthorization(x => x.AddPolicy("",
-                new AuthorizationPolicy(Enumerable.Empty<IAuthorizationRequirement>().ToArray(),
-                    Enumerable.Empty<string>())));
+            //services.AddAuthorization(x => x.AddPolicy("",
+            //    new AuthorizationPolicy(Enumerable.Empty<IAuthorizationRequirement>().ToArray(),
+            //        Enumerable.Empty<string>())));
 
             //services.AddAuthentication().AddJwtBearer(x => new JwtBearerOptions());
         }
@@ -44,6 +44,7 @@ namespace TokenAuth
                 app.UseDeveloperExceptionPage();
             }
             app.UseMvc();
+            Config.ConfigurationManager.BuildAppsettings();
             //app.UseAuthentication();
         }
     }

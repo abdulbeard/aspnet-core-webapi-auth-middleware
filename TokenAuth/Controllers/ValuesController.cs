@@ -12,6 +12,8 @@ namespace TokenAuth.Controllers
         [HttpGet(ValuesRoutes.Get)]
         public IEnumerable<string> Get()
         {
+            //var sdf = Program.Configuration["Logging:Console:LogLevel:Default"];
+            var sdf = Config.ConfigurationManager.Appsettings<int>("Logging:Console:LogLevel:Count");
             var context = HttpContext;
             var routeData = RouteData;
             return new string[] { "value1", "value2" };
