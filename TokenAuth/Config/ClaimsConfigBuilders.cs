@@ -10,21 +10,33 @@ namespace TokenAuth.Config
     public static class ClaimsConfigBuilders
     {
         public static ClaimsExtractionConfig ExtractorByPath(this JsonPathClaimExtractionConfig config,
-            Func<string, string, Task<Claim>> func)
+            Func<string, string, Task<Claim>> func, string extractionPath)
         {
+            if (string.IsNullOrEmpty(extractionPath))
+            {
+                throw new ArgumentNullException(extractionPath);
+            }
+            config.ConfigureExtractionFunction(func, extractionPath);
             return config;
         }
 
         public static ClaimsExtractionConfig ExtractorByRegularExpression(this RegexClaimExtractionConfig config,
-            Func<string, Regex, Task<Claim>> func)
+            Func<string, Regex, Task<Claim>> func, Regex extractionRegex)
         {
             return config;
         }
 
 
-        public static ClaimsExtractionConfig ExtractorByType(this TypeClaimExtractionConfig config,
-            Func<Type, Task<Claim>> func)
+        public static ClaimsExtractionConfig ExtractorByType<T>(this TypeClaimExtractionConfig<T> config,
+            Func<T, Task<Claim>> func, Type type)
         {
+            return config;
+        }
+
+        public static RouteClaimsConfig AddExtractorConfig(this RouteClaimsConfig config, ClaimsExtractionConfig extractionConfig)
+        {
+            //TODO: Add config.ExtractionConfigs null check
+            config.ExtractionConfigs.Add(extractionConfig);
             return config;
         }
 

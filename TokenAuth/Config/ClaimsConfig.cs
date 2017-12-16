@@ -5,55 +5,89 @@ using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace TokenAuth.Config
 {
     public abstract class ClaimsExtractionConfig
     {
         public ClaimLocation Location { get; set; }
-        public ExtractionType ExtractionType { get; set; }
+        protected ExtractionType ExtractionType { get; set; }
         public string ClaimName { get; set; }
-        private Func<Type, Task<Claim>> TypeExtraction { get; set; }
-        private Func<string, string, Task<Claim>> JsonPathExtraction { get; set; }
-        private Func<string, Regex, Task<Claim>> RegExExtraction { get; set; }
         public abstract Task<Claim> GetClaimAsync(Type type = null, string content = null);
-
-        private Task<IList<Claim>> GetClaim(HttpRequestMessage request)
-        {
-            return null;
-        }
     }
 
     public class RegexClaimExtractionConfig : ClaimsExtractionConfig
     {
+        protected Func<string, Regex, Task<Claim>> RegExExtraction;
+        private Regex regex;
         public RegexClaimExtractionConfig()
         {
-            base.ExtractionType = ExtractionType.RegEx;
+            ExtractionType = ExtractionType.RegEx;
+        }
+
+        public void ConfigureExtractionFunction(Func<string, Regex, Task<Claim>> func, Regex extractionRegex)
+        {
+            RegExExtraction = func;
+            regex = extractionRegex;
         }
 
         public override Task<Claim> GetClaimAsync(Type type = null, string content = null)
         {
             if (string.IsNullOrEmpty(content))
             {
-                throw new ArgumentNullException();
+                return null;
             }
-            throw new NotImplementedException();
+            return RegExExtraction(content, regex);
         }
     }
 
     public class JsonPathClaimExtractionConfig : ClaimsExtractionConfig
     {
+        private Func<string, string, Task<Claim>> JsonPathExtraction;
+        private string path;
         public JsonPathClaimExtractionConfig()
         {
             base.ExtractionType = ExtractionType.JsonPath;
         }
+
+        public void ConfigureExtractionFunction(Func<string, string, Task<Claim>> func, string jsonPath)
+        {
+            JsonPathExtraction = func;
+            this.path = jsonPath;
+        }
+
+        public override Task<Claim> GetClaimAsync(Type type = null, string content = null)
+        {
+            if(content == null)
+            {
+                return null;
+            }
+            return JsonPathExtraction(content, path);
+        }
     }
 
-    public class TypeClaimExtractionConfig : ClaimsExtractionConfig
+    public class TypeClaimExtractionConfig<T> : ClaimsExtractionConfig
     {
+        private Func<T, Task<Claim>> TypeExtraction;
+
         public TypeClaimExtractionConfig()
         {
             base.ExtractionType = ExtractionType.Type;
+        }
+
+        public void ConfigureExtractionFunction(Func<T, Task<Claim>> func)
+        {
+            TypeExtraction = func;
+        }
+
+        public override Task<Claim> GetClaimAsync(Type type = null, string content = null)
+        {
+            if(type == null || TypeExtraction == null)
+            {
+                return null;
+            }
+            return TypeExtraction(JsonConvert.DeserializeObject<T>(content));
         }
     }
 
@@ -65,8 +99,8 @@ namespace TokenAuth.Config
 
     public class RouteClaimsConfig
     {
-        public ClaimsExtractionConfig ExtractionConfig { get; set; }
-        public ClaimsValidationConfig ValidationConfig { get; set; }
+        public IList<ClaimsExtractionConfig> ExtractionConfigs { get; set; }
+        public ClaimsValidationConfig ValidationConfig { get; set; }        
     }
 
     public enum ClaimLocation
