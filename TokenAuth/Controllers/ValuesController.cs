@@ -8,12 +8,17 @@ namespace TokenAuth.Controllers
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
+        Config.ConfigurationManager configManager;
+        public ValuesController(Config.ConfigurationManager configManager)
+        {
+            this.configManager = configManager;
+        }
         // GET api/values
         [HttpGet(ValuesRoutes.Get)]
         public IEnumerable<string> Get()
         {
             //var sdf = Program.Configuration["Logging:Console:LogLevel:Default"];
-            var sdf = Config.ConfigurationManager.Appsettings<int>("Logging:Console:LogLevel:Count");
+            var sdf = configManager.Appsettings<int>("Logging:Console:LogLevel:Count");
             var context = HttpContext;
             var routeData = RouteData;
             return new string[] { "value1", "value2" };

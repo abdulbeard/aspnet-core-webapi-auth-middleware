@@ -95,12 +95,6 @@ namespace TokenAuth.Config
         public string ClaimName { get; set; }
     }
 
-    public class RouteClaimsConfig
-    {
-        public IList<ClaimsExtractionConfig> ExtractionConfigs { get; set; }
-        public ClaimsValidationConfig ValidationConfig { get; set; }
-    }
-
     public enum ClaimLocation
     {
         None = 0,

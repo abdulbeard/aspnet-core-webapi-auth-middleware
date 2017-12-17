@@ -29,6 +29,7 @@ namespace TokenAuth
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddSingleton(typeof(Config.ConfigurationManager), new Config.ConfigurationManager());
             //services.AddAuthorization(x => x.AddPolicy("",
             //    new AuthorizationPolicy(Enumerable.Empty<IAuthorizationRequirement>().ToArray(),
             //        Enumerable.Empty<string>())));
@@ -44,7 +45,6 @@ namespace TokenAuth
                 app.UseDeveloperExceptionPage();
             }
             app.UseMvc();
-            Config.ConfigurationManager.BuildAppsettings();
             //app.UseAuthentication();
         }
     }

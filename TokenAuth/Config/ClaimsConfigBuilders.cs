@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using TokenAuth.Config.Routing;
 
 namespace TokenAuth.Config
 {
