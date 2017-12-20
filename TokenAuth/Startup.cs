@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Rest;
+using TokenAuth.Middleware;
 
 namespace TokenAuth
 {
@@ -45,6 +46,7 @@ namespace TokenAuth
                 app.UseDeveloperExceptionPage();
             }
             app.UseMvc();
+            app.UseLoggingMiddleware();
             //app.UseAuthentication();
         }
     }

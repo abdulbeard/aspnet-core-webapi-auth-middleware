@@ -5,12 +5,13 @@ using TokenAuth.Config.Routing;
 
 namespace TokenAuth.Controllers
 {
-    [Route("api/[controller]")]
+    [Route(ValuesRoutes.Prefix)]
     public class ValuesController : Controller
     {
         Config.ConfigurationManager configManager;
         public ValuesController(Config.ConfigurationManager configManager)
         {
+            var routeData = RouteData;
             this.configManager = configManager;
         }
         // GET api/values
@@ -26,7 +27,7 @@ namespace TokenAuth.Controllers
 
         // GET api/values/5
         [HttpGet(ValuesRoutes.GetById)]
-        public string Get(int id)
+        public string Get(int idklsjdfkljsldjfskldf)
         {
             var context = HttpContext;
             var routeData = RouteData;
