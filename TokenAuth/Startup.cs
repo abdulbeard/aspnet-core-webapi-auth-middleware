@@ -45,8 +45,9 @@ namespace TokenAuth
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseMvc();
             app.UseLoggingMiddleware();
+            app.UseCustomRouting();
+            app.UseMvc();
             //app.UseAuthentication();
         }
     }

@@ -8,6 +8,6 @@ namespace TokenAuth.Config.Routing
     public class RouteClaimsConfig
     {
         public IList<ClaimsExtractionConfig> ExtractionConfigs { get; set; }
-        public ClaimsValidationConfig ValidationConfig { get; set; }
+        public IList<ClaimsValidationConfig> ValidationConfig { get; set; }
     }
 }
