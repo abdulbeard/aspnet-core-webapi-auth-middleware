@@ -1,18 +1,28 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using TokenAuth.Config.Routing;
+using System.Linq;
 
 namespace TokenAuth.Middleware
 {
     public static class MiddlewareExtensions
     {
-        public static IApplicationBuilder UseLoggingMiddleware(this IApplicationBuilder app)
+        //public static IApplicationBuilder UseLoggingMiddleware(this IApplicationBuilder app)
+        //{
+        //    return app.UseMiddleware<CustomRoutingAndClaimsValidationMiddleware>();
+        //}
+
+        public static IApplicationBuilder UseCustomRoutingAndClaimsValidation(this IApplicationBuilder app, IEnumerable<IRouteDefinitions> routeDefs)
         {
-            return app.UseMiddleware<LogMiddleware>();
+            var routeDefinitions = routeDefs.SelectMany(x => x.GetRouteDefinitions())
+                .Select(x => new InternalRouteDefinition(x))
+                .GroupBy(x => x.Method.Method)
+                .ToDictionary(x => x.Key, x => x?.ToList() ?? new List<InternalRouteDefinition>());
+            CustomRoutingAndClaimsValidationMiddleware.RegisterRoutes(routeDefinitions);
+            app.UseMiddleware<CustomRoutingAndClaimsValidationMiddleware>();
+            return app;
         }
 
         public static IApplicationBuilder UseCustomRouting(this IApplicationBuilder app)

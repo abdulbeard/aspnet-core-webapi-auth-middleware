@@ -12,34 +12,41 @@ using TokenAuth.Utils;
 
 namespace TokenAuth.Middleware
 {
-    public class LogMiddleware
+    public class CustomRoutingAndClaimsValidationMiddleware
     {
         private readonly RequestDelegate _next;
-        public LogMiddleware(RequestDelegate next)
+        public CustomRoutingAndClaimsValidationMiddleware(RequestDelegate next)
         {
             _next = next;
         }
 
+        private static Dictionary<string, List<InternalRouteDefinition>> _routes;
+        internal static void RegisterRoutes(Dictionary<string, List<InternalRouteDefinition>> routeDefs)
+        {
+            _routes = routeDefs;
+        }
 
         public async Task Invoke(HttpContext context)
         {
+            //var appTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.ExportedTypes);
+
             var httpAction = context.Request.Method;
-            RouteDefinition matchingRouteDefinition = null;
-            foreach (var action in ValuesRoutes.RouteDefinitions[httpAction])
+            InternalRouteDefinition matchingRouteDefinition = null;
+            foreach (var route in _routes[httpAction])
             {
-                var templateMatcher = new TemplateMatcher(action.RouteTemplate, RoutesUtils.GetDefaults(action.RouteTemplate));
-                var routeValues = RoutesUtils.GetDefaults(action.RouteTemplate);
+                var templateMatcher = new TemplateMatcher(route.RouteTemplate, RoutesUtils.GetDefaults(route.RouteTemplate));
+                var routeValues = RoutesUtils.GetDefaults(route.RouteTemplate);
                 var routeIsAMatch = templateMatcher.TryMatch(context.Request.Path, routeValues);
                 if (routeIsAMatch)
                 {
-                    matchingRouteDefinition = action;
+                    matchingRouteDefinition = route;
                     break;
                 }
             }
 
             var bodyMemStream = new MemoryStream();
             context.Request.Body.CopyTo(bodyMemStream);
-            context.Request.Body.Position = 0;
+            //context.Request.Body.Position = 0;
             var stringBody = System.Text.Encoding.UTF8.GetString(bodyMemStream.ToArray());
             var extractedClaims = (await Task.WhenAll(matchingRouteDefinition.ClaimsConfig.ExtractionConfigs.Select(x => x.GetClaimAsync())).ConfigureAwait(false)).ToList();
             var requiredClaims = matchingRouteDefinition.ClaimsConfig.ValidationConfig.Where(x => x.IsRequired);
@@ -47,7 +54,8 @@ namespace TokenAuth.Middleware
             // if required claims are present, match claims to confirm all is good
 
 
-            return _next(context);
+            await _next(context).ConfigureAwait(false);
+            return;
         }
     }
 }

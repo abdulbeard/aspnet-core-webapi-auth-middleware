@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Rest;
+using TokenAuth.Config.Routing;
 using TokenAuth.Middleware;
 
 namespace TokenAuth
@@ -45,8 +46,9 @@ namespace TokenAuth
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseLoggingMiddleware();
-            app.UseCustomRouting();
+            app.UseCustomRoutingAndClaimsValidation(new List<IRouteDefinitions> { new ValuesRoutes() });
+            //app.UseLoggingMiddleware();
+            //app.UseCustomRouting();
             app.UseMvc();
             //app.UseAuthentication();
         }
