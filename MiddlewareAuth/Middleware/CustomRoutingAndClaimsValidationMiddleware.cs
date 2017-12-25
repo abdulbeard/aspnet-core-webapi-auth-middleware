@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Template;
-using Newtonsoft.Json;
-using System;
+using MiddlewareAuth.Config.Routing;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using TokenAuth.Config.Routing;
 using TokenAuth.Utils;
 
-namespace TokenAuth.Middleware
+namespace MiddlewareAuth.Middleware
 {
     public class CustomRoutingAndClaimsValidationMiddleware
     {

@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using TokenAuth.Config.Routing;
+using MiddlewareAuth.Config.Routing;
 
 namespace TokenAuth.Controllers
 {
     [Route(ValuesRoutes.Prefix)]
     public class ValuesController : Controller
     {
-        Config.ConfigurationManager configManager;
-        public ValuesController(Config.ConfigurationManager configManager)
+        MiddlewareAuth.Config.ConfigurationManager configManager;
+        public ValuesController(MiddlewareAuth.Config.ConfigurationManager configManager)
         {
             var routeData = RouteData;
             this.configManager = configManager;

@@ -1,20 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.Rest;
-using TokenAuth.Config.Routing;
-using TokenAuth.Middleware;
+using MiddlewareAuth.Config.Routing;
+using MiddlewareAuth.Middleware;
 
 namespace TokenAuth
 {
@@ -31,7 +21,7 @@ namespace TokenAuth
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddSingleton(typeof(Config.ConfigurationManager), new Config.ConfigurationManager());
+            services.AddSingleton(typeof(MiddlewareAuth.Config.ConfigurationManager), new MiddlewareAuth.Config.ConfigurationManager());
             //services.AddAuthorization(x => x.AddPolicy("",
             //    new AuthorizationPolicy(Enumerable.Empty<IAuthorizationRequirement>().ToArray(),
             //        Enumerable.Empty<string>())));

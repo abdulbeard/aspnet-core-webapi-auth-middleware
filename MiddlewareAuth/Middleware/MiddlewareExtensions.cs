@@ -2,18 +2,13 @@
 using Microsoft.AspNetCore.Routing;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TokenAuth.Config.Routing;
 using System.Linq;
+using MiddlewareAuth.Config.Routing;
 
-namespace TokenAuth.Middleware
+namespace MiddlewareAuth.Middleware
 {
     public static class MiddlewareExtensions
     {
-        //public static IApplicationBuilder UseLoggingMiddleware(this IApplicationBuilder app)
-        //{
-        //    return app.UseMiddleware<CustomRoutingAndClaimsValidationMiddleware>();
-        //}
-
         public static IApplicationBuilder UseCustomRoutingAndClaimsValidation(this IApplicationBuilder app, IEnumerable<IRouteDefinitions> routeDefs)
         {
             var routeDefinitions = routeDefs.SelectMany(x => x.GetRouteDefinitions())

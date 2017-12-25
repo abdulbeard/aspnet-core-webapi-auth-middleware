@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace TokenAuth.Config
+namespace MiddlewareAuth.Config
 {
     public class ConfigurationManager
     {
