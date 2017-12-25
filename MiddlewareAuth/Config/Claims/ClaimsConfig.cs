@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace MiddlewareAuth.Config
+namespace MiddlewareAuth.Config.Claims
 {
     public abstract class ClaimsExtractionConfig
     {

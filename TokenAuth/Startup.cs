@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MiddlewareAuth.Config.Routing;
 using MiddlewareAuth.Middleware;
+using TokenAuth.Routes;
 
 namespace TokenAuth
 {

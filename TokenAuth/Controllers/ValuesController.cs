@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using MiddlewareAuth.Config.Routing;
+using TokenAuth.Routes;
 
 namespace TokenAuth.Controllers
 {

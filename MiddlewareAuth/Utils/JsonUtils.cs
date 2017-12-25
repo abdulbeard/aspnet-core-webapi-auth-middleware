@@ -2,7 +2,7 @@
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
-namespace MiddlewareAuth.Config
+namespace MiddlewareAuth.Utils
 {
     public class JsonUtils
     {
