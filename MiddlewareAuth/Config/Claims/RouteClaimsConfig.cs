@@ -1,11 +1,11 @@
-﻿using MiddlewareAuth.Config.Claims;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using MiddlewareAuth.Config.Claims.ExtractionConfigs;
 
-namespace MiddlewareAuth.Config.Routing
+namespace MiddlewareAuth.Config.Claims
 {
     public class RouteClaimsConfig
     {
-        public IList<ClaimsExtractionConfig> ExtractionConfigs { get; set; }
+        public IList<IValidClaimsExtractionConfig> ExtractionConfigs { get; set; }
         public IList<ClaimsValidationConfig> ValidationConfig { get; set; }
     }
 }
