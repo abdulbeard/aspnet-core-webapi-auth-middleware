@@ -27,7 +27,7 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
             {
                 throw new ArgumentException($"Extraction function can't be null. Use {nameof(ConfigureExtraction)} method to configure it first.");
             }
-            return new ValidTypeClaimExtractionConfig<T>(_typeExtraction, ClaimName);
+            return new ValidTypeClaimExtractionConfig<T>(_typeExtraction, ClaimName, Location);
         }
     }
 
@@ -36,18 +36,18 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
         private readonly Func<T, Task<string>> _typeExtraction;
         private readonly string _claimName;
 
-        public ValidTypeClaimExtractionConfig(Func<T, Task<string>> func, string claim)
+        public ValidTypeClaimExtractionConfig(Func<T, Task<string>> func, string claim, ClaimLocation location)
         {
             _typeExtraction = func;
             _claimName = claim;
+            ClaimLocation = location;
         }
 
-        public async Task<Claim> GetClaimAsync(Type type = null, string content = null)
+        public ExtractionType ExtractionType => ExtractionType.Type;
+        public ClaimLocation ClaimLocation { get; }
+
+        public async Task<Claim> GetClaimAsync(string content)
         {
-            if (type == null || _typeExtraction == null)
-            {
-                return null;
-            }
             var value = await _typeExtraction(JsonConvert.DeserializeObject<T>(content)).ConfigureAwait(false);
             return new Claim(_claimName, value);
         }

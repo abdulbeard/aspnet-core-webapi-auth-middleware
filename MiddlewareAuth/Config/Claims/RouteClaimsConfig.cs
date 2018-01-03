@@ -6,6 +6,6 @@ namespace MiddlewareAuth.Config.Claims
     public class RouteClaimsConfig
     {
         public IList<IValidClaimsExtractionConfig> ExtractionConfigs { get; set; }
-        public IList<ClaimsValidationConfig> ValidationConfig { get; set; }
+        public IList<ClaimValidationConfig> ValidationConfig { get; set; }
     }
 }

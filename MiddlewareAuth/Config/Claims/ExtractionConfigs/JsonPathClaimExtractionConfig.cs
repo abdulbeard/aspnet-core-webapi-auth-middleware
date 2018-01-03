@@ -38,7 +38,7 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
             {
                 throw new ArgumentException($"{nameof(_path)} can't be null or empty. Use {nameof(ConfigureExtraction)} method to configure it first.");
             }
-            return new ValidJsonPathClaimExtractionConfig(_path, _jsonPathExtraction, ClaimName);
+            return new ValidJsonPathClaimExtractionConfig(_path, _jsonPathExtraction, ClaimName, Location);
         }
     }
 
@@ -47,13 +47,18 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
         private readonly Func<string, string, Task<string>> _jsonPathExtraction;
         private readonly string _path;
         private readonly string _claimName;
-        public ValidJsonPathClaimExtractionConfig(string path, Func<string, string, Task<string>> jsonPathExtraction, string claimName)
+        public ValidJsonPathClaimExtractionConfig(string path, Func<string, string, Task<string>> jsonPathExtraction, string claimName, ClaimLocation location)
         {
             _path = path;
             _jsonPathExtraction = jsonPathExtraction;
             _claimName = claimName;
+            ClaimLocation = location;
         }
-        public async Task<Claim> GetClaimAsync(Type type = null, string content = null)
+
+        public ExtractionType ExtractionType => ExtractionType.JsonPath;
+        public ClaimLocation ClaimLocation { get; }
+
+        public async Task<Claim> GetClaimAsync(string content)
         {
             if (content == null)
             {

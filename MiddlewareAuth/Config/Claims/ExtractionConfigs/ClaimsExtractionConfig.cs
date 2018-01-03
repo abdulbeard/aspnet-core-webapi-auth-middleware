@@ -21,6 +21,8 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
 
     public interface IValidClaimsExtractionConfig
     {
-        Task<Claim> GetClaimAsync(Type type = null, string content = null);
+        ExtractionType ExtractionType { get; }
+        ClaimLocation ClaimLocation { get; }
+        Task<Claim> GetClaimAsync(string content);
     }
 }

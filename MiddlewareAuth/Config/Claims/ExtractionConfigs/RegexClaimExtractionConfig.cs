@@ -44,7 +44,7 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
             {
                 throw new ArgumentException($"Extraction regex can't be null. Use {nameof(ConfigureExtraction)} method to configure it first.");
             }
-            return new ValidRegexClaimExtractionConfig(_regExExtraction, _regex, ClaimName);
+            return new ValidRegexClaimExtractionConfig(_regExExtraction, _regex, ClaimName, Location);
         }
     }
 
@@ -54,14 +54,18 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
         private Regex _regex;
         private string _claimName;
 
-        public ValidRegexClaimExtractionConfig(Func<string, Regex, Task<string>> func, Regex regex, string claim)
+        public ValidRegexClaimExtractionConfig(Func<string, Regex, Task<string>> func, Regex regex, string claim, ClaimLocation location)
         {
             _regExExtraction = func;
             _regex = regex;
             _claimName = claim;
+            ClaimLocation = location;
         }
 
-        public async Task<Claim> GetClaimAsync(Type type = null, string content = null)
+        public ExtractionType ExtractionType => ExtractionType.RegEx;
+        public ClaimLocation ClaimLocation { get; }
+
+        public async Task<Claim> GetClaimAsync(string content)
         {
             var regexValue = await _regExExtraction(content, _regex).ConfigureAwait(false);
             return new Claim(_claimName, regexValue);

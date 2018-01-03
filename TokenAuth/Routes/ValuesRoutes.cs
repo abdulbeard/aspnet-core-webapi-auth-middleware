@@ -56,12 +56,18 @@ namespace TokenAuth.Routes
                                     return Task.FromResult(extractedValues?.First());
                                 }, "$.ReportViolationEmail").Build()
                         },
-                        ValidationConfig = new List<ClaimsValidationConfig>()
+                        ValidationConfig = new List<ClaimValidationConfig>()
                         {
-                            new ClaimsValidationConfig()
+                            new ClaimValidationConfig()
                             {
                                 ClaimName = "AltruisticAlignment",
                                 IsRequired = true
+                            },
+                            new ClaimValidationConfig()
+                            {
+                                ClaimName = JwtRegisteredClaimNames.Email,
+                                IsRequired = true,
+                                AllowNullOrEmpty = true
                             }
                         }
                     }
