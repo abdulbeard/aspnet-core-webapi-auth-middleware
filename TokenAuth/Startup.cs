@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using MiddlewareAuth.Auth;
 using MiddlewareAuth.Config.Routing;
 using MiddlewareAuth.Middleware;
 using TokenAuth.Routes;
@@ -21,6 +25,18 @@ namespace TokenAuth
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var policy = new TokenIssuancePolicy();
+            var token = Token.CreateJwt(policy, new List<Claim>
+            {
+                new Claim("CustomerId", Guid.NewGuid().ToString())
+            });
+            var validationResult = Token.ValidateJwt(token, policy, new TokenValidationParameters {
+                IssuerSigningKey = policy.SecurityKey,
+                ValidIssuer = AppDomain.CurrentDomain.FriendlyName,
+                ValidateIssuer = true,
+                ValidateLifetime = true,
+                ValidateAudience = false
+            });
             services.AddMvc();
             services.AddSingleton(typeof(MiddlewareAuth.Config.ConfigurationManager), new MiddlewareAuth.Config.ConfigurationManager());
             //services.AddAuthorization(x => x.AddPolicy("",
