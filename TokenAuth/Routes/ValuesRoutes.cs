@@ -19,7 +19,7 @@ namespace TokenAuth.Routes
         public const string Post = "";
         public const string Put = "{id}";
         public const string Delete = "{id}";
-        public const string PostMoralValues = "moralValues/{subscriberId}";
+        public const string PostMoralValues = "moralValues/{subscriberId}/{kiwiChant}";
         private const string pathSeparator = "/";
 
         public List<RouteDefinition> GetRouteDefinitions()
@@ -54,7 +54,25 @@ namespace TokenAuth.Routes
                                     var jsonUtils = new JsonUtils();
                                     var extractedValues = jsonUtils.GetValueFromJson(body, path);
                                     return Task.FromResult(extractedValues?.First());
-                                }, "$.ReportViolationEmail").Build()
+                                }, "$.ReportViolationEmail").Build(),
+                            new KeyValueClaimExtractionConfig("hukaChaka", ClaimLocation.QueryParameters).ConfigureExtraction(
+                                (listKvp, keyName) =>
+                                {
+                                    var value = listKvp.FirstOrDefault(x => x.Key == keyName).Value;
+                                    return Task.FromResult(value?.First().ToString() ?? string.Empty);
+                                }, "chandKara").Build()
+                            //new KeyValueClaimExtractionConfig("hukaChaka", ClaimLocation.Uri).ConfigureExtraction(
+                            //    (listKvp, keyName) =>
+                            //    {
+                            //        var value = listKvp.FirstOrDefault(x => x.Key == keyName).Value;
+                            //        return Task.FromResult(value?.First().ToString() ?? string.Empty);
+                            //    }, "kiwiChant").Build()
+                            //new KeyValueClaimExtractionConfig("hukaChaka", ClaimLocation.Headers).ConfigureExtraction(
+                            //    (listKvp, keyName) =>
+                            //    {
+                            //        var value = listKvp.FirstOrDefault(x => x.Key == keyName).Value;
+                            //        return Task.FromResult(value?.First().ToString() ?? string.Empty);
+                            //    }, "hukaChaka").Build()
                         },
                         ValidationConfig = new List<ClaimValidationConfig>()
                         {

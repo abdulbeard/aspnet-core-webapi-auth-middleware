@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
 
 namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
 {
@@ -55,9 +59,12 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
         public ExtractionType ExtractionType => ExtractionType.KeyValue;
         public ClaimLocation ClaimLocation { get; }
 
-        public Task<Claim> GetClaimAsync(string content)
+        public async Task<Claim> GetClaimAsync(string content)
         {
-            throw new NotImplementedException();
+            var contentDict = JsonConvert.DeserializeObject<List<KeyValuePair<string, List<object>>>>(content);
+            var value = await _keyValueExtraction(contentDict, _keyName)
+                .ConfigureAwait(false);
+            return new Claim(_claimName, value);
         }
     }
 }

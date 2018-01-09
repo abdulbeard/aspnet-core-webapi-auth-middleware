@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing.Template;
 using MiddlewareAuth.Config.Routing;
@@ -11,10 +12,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Primitives;
 using MiddlewareAuth.Config.Claims;
 using MiddlewareAuth.Config.Claims.ExtractionConfigs;
 using Newtonsoft.Json;
 using TokenAuth.Utils;
+using Microsoft.AspNetCore.Http;
 
 namespace MiddlewareAuth.Middleware
 {
@@ -133,13 +136,13 @@ namespace MiddlewareAuth.Middleware
                     }
                 case ClaimLocation.Headers:
                     {
-                        return extType == ExtractionType.KeyValue ? JsonConvert.SerializeObject(req.Headers) : string.Empty;
+                        return extType == ExtractionType.KeyValue ? JsonConvert.SerializeObject(IHeaderDictToKvp(req.Headers, req.Headers)) : string.Empty;
                     }
                 case ClaimLocation.Uri:
                     {
                         if (extType == ExtractionType.KeyValue)
                         {
-                            return routeValues == null ? "" : JsonConvert.SerializeObject(routeValues);
+                            return routeValues == null ? "" : JsonConvert.SerializeObject(RouteValueDictionaryToKvp(routeValues));
                         }
                         if (extType == ExtractionType.RegEx)
                         {
@@ -151,7 +154,7 @@ namespace MiddlewareAuth.Middleware
                     {
                         if (extType == ExtractionType.KeyValue)
                         {
-                            return JsonConvert.SerializeObject(req.Query);
+                            return JsonConvert.SerializeObject(IQueryCollectionToKvp(req.Query));
                         }
                         if (extType == ExtractionType.RegEx)
                         {
@@ -164,6 +167,29 @@ namespace MiddlewareAuth.Middleware
                     return string.Empty;
             }
             return string.Empty;
+        }
+
+        private List<KeyValuePair<string, List<object>>> IQueryCollectionToKvp(IQueryCollection iqc)
+        {
+            var result = new List<KeyValuePair<string, List<object>>>();
+            foreach (var key in iqc.Keys)
+            {
+                result.Add(new KeyValuePair<string, List<object>>(key,
+                    iqc[key].ToArray().Select(x => (object) x).ToList()));
+            }
+            return result;
+        }
+
+        private List<KeyValuePair<string, List<object>>> IHeaderDictToKvp(IEnumerable<KeyValuePair<string, StringValues>> arg, IHeaderDictionary dict)
+        {
+            return arg.Select(x =>
+                new KeyValuePair<string, List<object>>(x.Key,
+                    dict.GetCommaSeparatedValues(x.Key).Select(y => (object)y).ToList())).ToList();
+        }
+
+        private List<KeyValuePair<string, List<object>>> RouteValueDictionaryToKvp(IDictionary<string, object> arg)
+        {
+            return arg.Select(x => new KeyValuePair<string, List<object>>(x.Key, new List<object> { x.Value })).ToList();
         }
     }
 }
