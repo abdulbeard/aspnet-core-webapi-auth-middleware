@@ -7,6 +7,7 @@ using MiddlewareAuth.Config.Claims;
 using MiddlewareAuth.Config.Claims.ExtractionConfigs;
 using MiddlewareAuth.Utils;
 using TokenAuth.Models;
+using MiddlewareAuth.Config;
 
 namespace TokenAuth.Routes
 {
@@ -42,37 +43,15 @@ namespace TokenAuth.Routes
                         ExtractionConfigs = new List<IValidClaimsExtractionConfig>()
                         {
                             new JsonPathClaimExtractionConfig("AltruisticAlignment")
-                                .ConfigureExtraction((body, path) =>
-                                {
-                                    var jsonUtils = new JsonUtils();
-                                    var extractedValues = jsonUtils.GetValueFromJson(body, path);
-                                    return Task.FromResult(extractedValues?.First());
-                                }, "$.AltruisticAptitude.AltruisticAlignment").Build(),
+                                .ConfigureExtraction(ExtractionFunctions.JsonPathFunc, "$.AltruisticAptitude.AltruisticAlignment").Build(),
                             new JsonPathClaimExtractionConfig(JwtRegisteredClaimNames.Email)
-                                .ConfigureExtraction((body, path) =>
-                                {
-                                    var jsonUtils = new JsonUtils();
-                                    var extractedValues = jsonUtils.GetValueFromJson(body, path);
-                                    return Task.FromResult(extractedValues?.First());
-                                }, "$.ReportViolationEmail").Build(),
-                            new KeyValueClaimExtractionConfig("hukaChaka", ClaimLocation.QueryParameters).ConfigureExtraction(
-                                (listKvp, keyName) =>
-                                {
-                                    var value = listKvp.FirstOrDefault(x => x.Key == keyName).Value;
-                                    return Task.FromResult(value?.First().ToString() ?? string.Empty);
-                                }, "chandKara").Build()
-                            //new KeyValueClaimExtractionConfig("hukaChaka", ClaimLocation.Uri).ConfigureExtraction(
-                            //    (listKvp, keyName) =>
-                            //    {
-                            //        var value = listKvp.FirstOrDefault(x => x.Key == keyName).Value;
-                            //        return Task.FromResult(value?.First().ToString() ?? string.Empty);
-                            //    }, "kiwiChant").Build()
-                            //new KeyValueClaimExtractionConfig("hukaChaka", ClaimLocation.Headers).ConfigureExtraction(
-                            //    (listKvp, keyName) =>
-                            //    {
-                            //        var value = listKvp.FirstOrDefault(x => x.Key == keyName).Value;
-                            //        return Task.FromResult(value?.First().ToString() ?? string.Empty);
-                            //    }, "hukaChaka").Build()
+                                .ConfigureExtraction(ExtractionFunctions.JsonPathFunc, "$.ReportViolationEmail").Build(),
+                            new KeyValueClaimExtractionConfig("hukaChaka1", ClaimLocation.QueryParameters).ConfigureExtraction(ExtractionFunctions.KeyValueFunc, "chandKara").Build(),
+                            new KeyValueClaimExtractionConfig("hukaChaka2", ClaimLocation.Uri).ConfigureExtraction(ExtractionFunctions.KeyValueFunc, "kiwiChant").Build(),
+                            new KeyValueClaimExtractionConfig("hukaChaka3", ClaimLocation.Headers).ConfigureExtraction(ExtractionFunctions.KeyValueFunc, "hukaChaka").Build(),
+                            //make regex for the path only, not including the query parameters. For query params, use KeyValueClaimExtractionConfig instead
+                            new RegexClaimExtractionConfig("hookaRegex", ClaimLocation.Uri).ConfigureExtraction(ExtractionFunctions.RegexFunc, 
+                                new System.Text.RegularExpressions.Regex("/values/moralvalues/ca413986-f096-11e7-8c3f-9a214cf093ae/(.*)")).Build()
                         },
                         ValidationConfig = new List<ClaimValidationConfig>()
                         {

@@ -28,10 +28,11 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
         /// <param name="func">takes in json as 1st arg, a <see cref="Regex"/> as 2nd arg, and returns the string value of the regex match</param>
         /// <param name="extractionRegex">the <see cref="Regex"/> used to extract the claim value</param>
         /// <returns></returns>
-        public void ConfigureExtraction(Func<string, Regex, Task<string>> func, Regex extractionRegex)
+        public ClaimsExtractionConfig ConfigureExtraction(Func<string, Regex, Task<string>> func, Regex extractionRegex)
         {
             _regExExtraction = func;
             _regex = extractionRegex;
+            return this;
         }
 
         public override IValidClaimsExtractionConfig Build()
