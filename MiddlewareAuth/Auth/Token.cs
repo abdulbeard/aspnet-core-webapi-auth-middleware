@@ -9,7 +9,7 @@ using MiddlewareAuth.Extensions;
 
 namespace MiddlewareAuth.Auth
 {
-    public class Token
+    public class TokenManager
     {
         public static string CreateJwt(TokenIssuancePolicy policy, IList<Claim> claims)
         {
@@ -21,7 +21,7 @@ namespace MiddlewareAuth.Auth
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public static KeyValuePair<ClaimsPrincipal, SecurityToken> ValidateJwt(string tokenString, TokenIssuancePolicy policy, TokenValidationParameters validationParameters)
+        public static KeyValuePair<ClaimsPrincipal, SecurityToken> ValidateJwt(string tokenString, TokenValidationParameters validationParameters)
         {
             try
             {
@@ -121,25 +121,5 @@ namespace MiddlewareAuth.Auth
         {
             return new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.TotalSecondsSinceEpoch().ToString());
         }
-    }
-
-    public class TokenIssuancePolicy
-    {
-        public static TokenIssuancePolicy Default = new TokenIssuancePolicy();
-        private const string key = "C5AxWRAoC/lp3Ayt1RcAxMQDZ74fy1f6rzA7ko1GME06/FkBhRML1BNLXMwTVeoRAJ2oVvIdTy8b4Px8FgJ7e36hCp6SopZhoAng1HwPtLYg4QUXMfjCjaKEqba4/e5nsZXaJpn9a6CaSFy6WL3PPV5m7ZyFK+jLlhT+X5inqPk=";
-        public TokenIssuancePolicy()
-        {
-            Expiration = TimeSpan.FromHours(8);
-            Issuer = AppDomain.CurrentDomain.FriendlyName;
-            NotBefore = TimeSpan.Zero;
-            TokenId = Guid.NewGuid();
-            SecurityKey = new SymmetricSecurityKey(Encoding.Default.GetBytes(key));
-        }
-
-        public TimeSpan Expiration { get; set; }
-        public string Issuer { get; set; }
-        public TimeSpan NotBefore { get; set; }
-        public Guid TokenId { get; set; }
-        public SymmetricSecurityKey SecurityKey { get; set; }
     }
 }

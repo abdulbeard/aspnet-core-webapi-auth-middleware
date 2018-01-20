@@ -25,25 +25,8 @@ namespace TokenAuth
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var policy = new TokenIssuancePolicy();
-            var token = Token.CreateJwt(policy, new List<Claim>
-            {
-                new Claim("CustomerId", Guid.NewGuid().ToString())
-            });
-            var validationResult = Token.ValidateJwt(token, policy, new TokenValidationParameters {
-                IssuerSigningKey = policy.SecurityKey,
-                ValidIssuer = AppDomain.CurrentDomain.FriendlyName,
-                ValidateIssuer = true,
-                ValidateLifetime = true,
-                ValidateAudience = false
-            });
             services.AddMvc();
             services.AddSingleton(typeof(MiddlewareAuth.Config.ConfigurationManager), new MiddlewareAuth.Config.ConfigurationManager());
-            //services.AddAuthorization(x => x.AddPolicy("",
-            //    new AuthorizationPolicy(Enumerable.Empty<IAuthorizationRequirement>().ToArray(),
-            //        Enumerable.Empty<string>())));
-
-            //services.AddAuthentication().AddJwtBearer(x => new JwtBearerOptions());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
