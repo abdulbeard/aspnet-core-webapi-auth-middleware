@@ -21,10 +21,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace MiddlewareAuth.Middleware
 {
-    public class CustomRoutingAndClaimsValidationMiddleware
+    public class CustomClaimsValidationMiddleware
     {
         private readonly RequestDelegate _next;
-        public CustomRoutingAndClaimsValidationMiddleware(RequestDelegate next)
+        public CustomClaimsValidationMiddleware(RequestDelegate next)
         {
             _next = next;
         }
@@ -70,21 +70,21 @@ namespace MiddlewareAuth.Middleware
             var missingClaims = GetMissingClaims(routeDef.ClaimsConfig.ValidationConfig, claims);
             if (missingClaims?.Count > 0)
             {
-                await CreateMissingClaimsResponseAsync(missingClaims, context).ConfigureAwait(false);
+                await CreateResponse(missingClaims, context, new
+                {
+                    ErrorCode = 1235,
+                    Message = "The following claims require values",
+                    Data = missingClaims
+                }, HttpStatusCode.Forbidden).ConfigureAwait(false);
                 return false;
             }
             return true;
         }
 
-        private async Task CreateMissingClaimsResponseAsync(List<string> missingClaims, HttpContext context)
+        private async Task CreateResponse(List<string> missingClaims, HttpContext context, Object responseObject, HttpStatusCode statusCode = HttpStatusCode.Forbidden)
         {
-            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-            await context.Response.WriteAsync(JsonConvert.SerializeObject(new
-            {
-                ErrorCode = 1235,
-                Message = "The following claims require values",
-                Data = missingClaims
-            })).ConfigureAwait(false);
+            context.Response.StatusCode = (int)(statusCode);
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(responseObject)).ConfigureAwait(false);
         }
 
         private List<string> GetMissingClaims(IEnumerable<ClaimValidationConfig> validationConfig, IEnumerable<Claim> extractedClaims)
@@ -175,7 +175,7 @@ namespace MiddlewareAuth.Middleware
             foreach (var key in iqc.Keys)
             {
                 result.Add(new KeyValuePair<string, List<object>>(key,
-                    iqc[key].ToArray().Select(x => (object) x).ToList()));
+                    iqc[key].ToArray().Select(x => (object)x).ToList()));
             }
             return result;
         }

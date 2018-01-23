@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using MiddlewareAuth.Auth;
 using MiddlewareAuth.Config.Routing;
 using MiddlewareAuth.Middleware;
 using TokenAuth.Routes;
@@ -36,11 +32,8 @@ namespace TokenAuth
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCustomRoutingAndClaimsValidation(new List<IRouteDefinitions> { new ValuesRoutes() });
-            //app.UseLoggingMiddleware();
-            //app.UseCustomRouting();
+            app.UseCustomClaimsValidation(new List<IRouteDefinitions> { new ValuesRoutes() });
             app.UseMvc();
-            //app.UseAuthentication();
         }
     }
 }
