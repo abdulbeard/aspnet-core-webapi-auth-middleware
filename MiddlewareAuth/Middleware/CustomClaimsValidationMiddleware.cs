@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing.Template;
 using MiddlewareAuth.Config.Routing;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Primitives;
 using MiddlewareAuth.Config.Claims;
 using MiddlewareAuth.Config.Claims.ExtractionConfigs;
 using Newtonsoft.Json;
 using TokenAuth.Utils;
-using Microsoft.AspNetCore.Http;
 
 namespace MiddlewareAuth.Middleware
 {
@@ -70,21 +64,43 @@ namespace MiddlewareAuth.Middleware
             var missingClaims = GetMissingClaims(routeDef.ClaimsConfig.ValidationConfig, claims);
             if (missingClaims?.Count > 0)
             {
-                await CreateResponse(missingClaims, context, new
-                {
-                    ErrorCode = 1235,
-                    Message = "The following claims require values",
-                    Data = missingClaims
-                }, HttpStatusCode.Forbidden).ConfigureAwait(false);
+                await CreateResponse(missingClaims, context, routeDef.ClaimsConfig.MissingClaimsResponse).ConfigureAwait(false);
                 return false;
             }
             return true;
         }
 
-        private async Task CreateResponse(List<string> missingClaims, HttpContext context, Object responseObject, HttpStatusCode statusCode = HttpStatusCode.Forbidden)
+        private async Task CreateResponse(List<string> missingClaims, HttpContext context, MissingClaimsResponse missingClaimsResponse)
         {
-            context.Response.StatusCode = (int)(statusCode);
-            await context.Response.WriteAsync(JsonConvert.SerializeObject(responseObject)).ConfigureAwait(false);
+            if (missingClaimsResponse.MissingClaimsResponseOverride == null)
+            {
+                context.Response.StatusCode = (int)missingClaimsResponse.HttpStatusCode;
+                dynamic dynamicMissingClaimsResponseResponse = missingClaimsResponse.Response;
+                dynamicMissingClaimsResponseResponse.Data = missingClaims;
+                missingClaimsResponse.Response = dynamicMissingClaimsResponseResponse;
+                await context.Response.WriteAsync(JsonConvert.SerializeObject(missingClaimsResponse.Response)).ConfigureAwait(false);
+            }
+            else
+            {
+                var overrideResponse = await missingClaimsResponse.MissingClaimsResponseOverride(missingClaims).ConfigureAwait(false);
+                await BuildResponseFromResponse(overrideResponse, context).ConfigureAwait(false);
+            }
+        }
+
+        private async Task BuildResponseFromResponse(HttpResponse overrideResponse, HttpContext context)
+        {
+            if (overrideResponse != null)
+            {
+                context.Response.ContentLength = overrideResponse.ContentLength;
+                context.Response.ContentType = overrideResponse.ContentType;
+                context.Response.Headers.Clear();
+                overrideResponse.Headers.ToList().ForEach(x => context.Response.Headers.AppendList(x.Key, x.Value));
+                context.Response.StatusCode = overrideResponse.StatusCode;
+                overrideResponse.Body.Position = 0;//resetting stream position
+                var responseBytes = new byte[overrideResponse.Body.Length];
+                var bytesRead = await overrideResponse.Body.ReadAsync(responseBytes, 0, (int)overrideResponse.Body.Length).ConfigureAwait(false);
+                await context.Response.Body.WriteAsync(responseBytes, 0, responseBytes.Length).ConfigureAwait(false);
+            }
         }
 
         private List<string> GetMissingClaims(IEnumerable<ClaimValidationConfig> validationConfig, IEnumerable<Claim> extractedClaims)

@@ -11,7 +11,7 @@ namespace MiddlewareAuth.Config
         public static Task<string> JsonPathFunc(string body, string path)
         {
             var extractedValues = new JsonUtils().GetValueFromJson(body, path);
-            return Task.FromResult(extractedValues?.First());
+            return Task.FromResult(extractedValues?.FirstOrDefault() ?? string.Empty);
         }
 
         public static Task<string> KeyValueFunc(List<KeyValuePair<string, List<object>>> listKvp, string keyName)
@@ -22,7 +22,11 @@ namespace MiddlewareAuth.Config
         public static Task<string> RegexFunc(string data, Regex regex)
         {
             var match = regex.Match(data);
-            return Task.FromResult(match.Groups[1].Captures[0].ToString());
+            if (match.Success && match.Groups.Count > 1 && match.Groups[1].Captures?.Count > 0)
+            {
+                return Task.FromResult(match.Groups[1].Captures[0].ToString());
+            }
+            return Task.FromResult(string.Empty);
         }
     }
 }

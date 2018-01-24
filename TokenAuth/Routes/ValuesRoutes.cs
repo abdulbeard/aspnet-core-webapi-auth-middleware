@@ -8,6 +8,13 @@ using MiddlewareAuth.Config.Claims.ExtractionConfigs;
 using MiddlewareAuth.Utils;
 using TokenAuth.Models;
 using MiddlewareAuth.Config;
+using System.Dynamic;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Microsoft.Extensions.Primitives;
+using System.IO;
 
 namespace TokenAuth.Routes
 {
@@ -50,7 +57,7 @@ namespace TokenAuth.Routes
                             new KeyValueClaimExtractionConfig("hukaChaka2", ClaimLocation.Uri).ConfigureExtraction(ExtractionFunctions.KeyValueFunc, "kiwiChant").Build(),
                             new KeyValueClaimExtractionConfig("hukaChaka3", ClaimLocation.Headers).ConfigureExtraction(ExtractionFunctions.KeyValueFunc, "hukaChaka").Build(),
                             //make regex for the path only, not including the query parameters. For query params, use KeyValueClaimExtractionConfig instead
-                            new RegexClaimExtractionConfig("hookaRegex", ClaimLocation.Uri).ConfigureExtraction(ExtractionFunctions.RegexFunc, 
+                            new RegexClaimExtractionConfig("hookaRegex", ClaimLocation.Uri).ConfigureExtraction(ExtractionFunctions.RegexFunc,
                                 new System.Text.RegularExpressions.Regex("/values/moralvalues/ca413986-f096-11e7-8c3f-9a214cf093ae/(.*)")).Build()
                         },
                         ValidationConfig = new List<ClaimValidationConfig>()
@@ -64,12 +71,40 @@ namespace TokenAuth.Routes
                             {
                                 ClaimName = JwtRegisteredClaimNames.Email,
                                 IsRequired = true,
-                                AllowNullOrEmpty = true
+                                AllowNullOrEmpty = false
                             }
+                        },
+                        MissingClaimsResponse = new MissingClaimsResponse
+                        {
+                            HttpStatusCode = System.Net.HttpStatusCode.Forbidden,
+                            Response = GetMissingClaimsResponse(),
+                            //MissingClaimsResponseOverride = (missingClaims) =>
+                            //{
+                            //    return Task.FromResult(GetSampleResponse());
+                            //}
                         }
                     }
                 }
             };
+        }
+
+        private dynamic GetMissingClaimsResponse()
+        {
+            dynamic result = new ExpandoObject();
+            result.ErrorCode = 2500;
+            result.Message = "Somebody gonna get hurt real bad";
+            return result;
+        }
+
+        private HttpResponse GetSampleResponse()
+        {
+            var response = new DefaultHttpResponse(new DefaultHttpContext());
+            response.Body = new MemoryStream();
+            var responseBytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new { Yolo = "nolo" }));
+            response.Body.WriteAsync(responseBytes, 0, responseBytes.Length);
+            response.Headers.Add(new KeyValuePair<string, StringValues>("yolo", new StringValues("solo")));
+            response.StatusCode = StatusCodes.Status502BadGateway;
+            return response;
         }
     }
 }
