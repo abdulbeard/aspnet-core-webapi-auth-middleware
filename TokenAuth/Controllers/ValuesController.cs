@@ -8,7 +8,7 @@ namespace TokenAuth.Controllers
     [Route(ValuesRoutes.Prefix)]
     public class ValuesController : Controller
     {
-        MiddlewareAuth.Config.ConfigurationManager configManager;
+        readonly MiddlewareAuth.Config.ConfigurationManager configManager;
         public ValuesController(MiddlewareAuth.Config.ConfigurationManager configManager)
         {
             var routeData = RouteData;

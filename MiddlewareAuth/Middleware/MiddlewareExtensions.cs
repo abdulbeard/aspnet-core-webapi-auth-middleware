@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using System.Collections.Generic;
+using System.Linq;
 using MiddlewareAuth.Config.Routing;
 
 namespace MiddlewareAuth.Middleware
@@ -8,29 +9,27 @@ namespace MiddlewareAuth.Middleware
     {
         public static IApplicationBuilder UseCustomClaimsValidation(this IApplicationBuilder app, IEnumerable<IRouteDefinitions> routeDefs)
         {
-            CustomClaimsValidationMiddleware.RegisterRoutes(GetValidateRouteDefs(routeDefs));
+            CustomClaimsValidationMiddleware.RegisterRoutes(GetValidRouteDefs(routeDefs));
             return app.UseMiddleware<CustomClaimsValidationMiddleware>();
         }
 
-        private static Dictionary<string, List<InternalRouteDefinition>> GetValidateRouteDefs(IEnumerable<IRouteDefinitions> routeDefs)
+        private static Dictionary<string, List<InternalRouteDefinition>> GetValidRouteDefs(
+            IEnumerable<IRouteDefinitions> routeDefs)
         {
             var result = new Dictionary<string, List<InternalRouteDefinition>>();
-            if (routeDefs != null)
+            if (routeDefs == null) return result;
+            foreach (var routeDef in routeDefs)
             {
-                foreach (var routeDef in routeDefs)
+                var routeDefinitions = routeDef.GetRouteDefinitions() ?? new List<RouteDefinition>();
+                foreach (var internalRouteDef in routeDefinitions.Select(x => new InternalRouteDefinition(x)))
                 {
-                    var routeDef_definitions = routeDef.GetRouteDefinitions() ?? new List<RouteDefinition>();
-                    foreach (var route_routeDef in routeDef_definitions)
+                    if (internalRouteDef.Method != null)
                     {
-                        var internalRouteDef = new InternalRouteDefinition(route_routeDef);
-                        if (internalRouteDef.Method != null)
+                        if (!result.ContainsKey(internalRouteDef.Method.Method))
                         {
-                            if (!result.ContainsKey(internalRouteDef.Method.Method))
-                            {
-                                result.Add(internalRouteDef.Method.Method, new List<InternalRouteDefinition>());
-                            }
-                            result[internalRouteDef.Method.Method].Add(internalRouteDef);
+                            result.Add(internalRouteDef.Method.Method, new List<InternalRouteDefinition>());
                         }
+                        result[internalRouteDef.Method.Method].Add(internalRouteDef);
                     }
                 }
             }

@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Primitives;
+using MiddlewareAuth.Config;
 using MiddlewareAuth.Config.Claims;
 using MiddlewareAuth.Config.Claims.ExtractionConfigs;
 using Newtonsoft.Json;
@@ -18,19 +19,22 @@ namespace MiddlewareAuth.Middleware
     public class CustomClaimsValidationMiddleware
     {
         private readonly RequestDelegate _next;
-        public CustomClaimsValidationMiddleware(RequestDelegate next)
+        private static Dictionary<string, List<InternalRouteDefinition>> _routes;
+        private static ConfigurationManager configurationManager;
+
+        public CustomClaimsValidationMiddleware(RequestDelegate next, ConfigurationManager configurationManager)
         {
             _next = next;
-        }
-
-        private static Dictionary<string, List<InternalRouteDefinition>> _routes;
-        internal static void RegisterRoutes(Dictionary<string, List<InternalRouteDefinition>> routeDefs)
-        {
-            _routes = routeDefs;
+            CustomClaimsValidationMiddleware.configurationManager = configurationManager;
         }
 
         public async Task Invoke(HttpContext context)
         {
+            var dict = configurationManager.GetFromJsonAppsetting<Dictionary<string, List<InternalRouteDefinition>>>(
+                "routeClaimsConfig");
+            _routes = dict;
+
+
             var matchedRouteResult = MatchRoute(context);
             if (matchedRouteResult.Key != null)
             {
@@ -44,7 +48,14 @@ namespace MiddlewareAuth.Middleware
             await _next(context).ConfigureAwait(false);
         }
 
-        private KeyValuePair<InternalRouteDefinition, RouteValueDictionary> MatchRoute(HttpContext context)
+        internal static void RegisterRoutes(Dictionary<string, List<InternalRouteDefinition>> routeDefs)
+        {
+            System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(routeDefs));
+
+            _routes = routeDefs;
+        }
+
+        private static KeyValuePair<InternalRouteDefinition, RouteValueDictionary> MatchRoute(HttpContext context)
         {
             foreach (var route in _routes[context.Request.Method])
             {
@@ -58,7 +69,7 @@ namespace MiddlewareAuth.Middleware
             return new KeyValuePair<InternalRouteDefinition, RouteValueDictionary>(null, null);
         }
 
-        private async Task<bool> ValidateClaimsAsync(InternalRouteDefinition routeDef, HttpContext context, RouteValueDictionary routeValues)
+        private static async Task<bool> ValidateClaimsAsync(InternalRouteDefinition routeDef, HttpContext context, RouteValueDictionary routeValues)
         {
             var claims = await GetClaimsAsync(routeDef, context.Request, routeValues).ConfigureAwait(false);
             var missingClaims = GetMissingClaims(routeDef.ClaimsConfig.ValidationConfig, claims);
@@ -70,7 +81,7 @@ namespace MiddlewareAuth.Middleware
             return true;
         }
 
-        private async Task CreateResponse(List<string> missingClaims, HttpContext context, MissingClaimsResponse missingClaimsResponse)
+        private static async Task CreateResponse(List<string> missingClaims, HttpContext context, MissingClaimsResponse missingClaimsResponse)
         {
             if (missingClaimsResponse.MissingClaimsResponseOverride == null)
             {
@@ -87,7 +98,7 @@ namespace MiddlewareAuth.Middleware
             }
         }
 
-        private async Task BuildResponseFromResponse(HttpResponse overrideResponse, HttpContext context)
+        private static async Task BuildResponseFromResponse(HttpResponse overrideResponse, HttpContext context)
         {
             if (overrideResponse != null)
             {
@@ -98,12 +109,12 @@ namespace MiddlewareAuth.Middleware
                 context.Response.StatusCode = overrideResponse.StatusCode;
                 overrideResponse.Body.Position = 0;//resetting stream position
                 var responseBytes = new byte[overrideResponse.Body.Length];
-                var bytesRead = await overrideResponse.Body.ReadAsync(responseBytes, 0, (int)overrideResponse.Body.Length).ConfigureAwait(false);
+                await overrideResponse.Body.ReadAsync(responseBytes, 0, (int)overrideResponse.Body.Length).ConfigureAwait(false);
                 await context.Response.Body.WriteAsync(responseBytes, 0, responseBytes.Length).ConfigureAwait(false);
             }
         }
 
-        private List<string> GetMissingClaims(IEnumerable<ClaimValidationConfig> validationConfig, IEnumerable<Claim> extractedClaims)
+        private static List<string> GetMissingClaims(IEnumerable<ClaimValidationConfig> validationConfig, IEnumerable<Claim> extractedClaims)
         {
             var extClaimsDict = extractedClaims.ToDictionary(x => x.Type, x => x.Value);
             return validationConfig
@@ -112,7 +123,7 @@ namespace MiddlewareAuth.Middleware
                 .Select(x => x.ClaimName).ToList();
         }
 
-        private async Task<List<Claim>> GetClaimsAsync(InternalRouteDefinition routeDef, HttpRequest req, RouteValueDictionary routeValues)
+        private static async Task<List<Claim>> GetClaimsAsync(InternalRouteDefinition routeDef, HttpRequest req, RouteValueDictionary routeValues)
         {
             var dict = new Dictionary<ClaimLocation, Dictionary<ExtractionType, string>>();
             var taskClaims = new List<Task<Claim>>();
@@ -121,7 +132,10 @@ namespace MiddlewareAuth.Middleware
             {
                 if (!dict.ContainsKey(extractionConfig.ClaimLocation))
                 {
-                    dict.Add(extractionConfig.ClaimLocation, new Dictionary<ExtractionType, string> { { extractionConfig.ExtractionType, string.Empty } });
+                    dict.Add(extractionConfig.ClaimLocation, new Dictionary<ExtractionType, string>
+                    {
+                        { extractionConfig.ExtractionType, string.Empty }
+                    });
                 }
                 else if (!dict[extractionConfig.ClaimLocation].ContainsKey(extractionConfig.ExtractionType))
                 {
@@ -139,7 +153,7 @@ namespace MiddlewareAuth.Middleware
             return (await Task.WhenAll(taskClaims).ConfigureAwait(false)).ToList();
         }
 
-        private string GetContent(ClaimLocation location, ExtractionType extType, HttpRequest req, RouteValueDictionary routeValues)
+        private static string GetContent(ClaimLocation location, ExtractionType extType, HttpRequest req, RouteValueDictionary routeValues)
         {
             switch (location)
             {
@@ -152,7 +166,7 @@ namespace MiddlewareAuth.Middleware
                     }
                 case ClaimLocation.Headers:
                     {
-                        return extType == ExtractionType.KeyValue ? JsonConvert.SerializeObject(IHeaderDictToKvp(req.Headers, req.Headers)) : string.Empty;
+                        return extType == ExtractionType.KeyValue ? JsonConvert.SerializeObject(HeaderDictToKvp(req.Headers, req.Headers)) : string.Empty;
                     }
                 case ClaimLocation.Uri:
                     {
@@ -170,7 +184,7 @@ namespace MiddlewareAuth.Middleware
                     {
                         if (extType == ExtractionType.KeyValue)
                         {
-                            return JsonConvert.SerializeObject(IQueryCollectionToKvp(req.Query));
+                            return JsonConvert.SerializeObject(QueryCollectionToKvp(req.Query));
                         }
                         if (extType == ExtractionType.RegEx)
                         {
@@ -178,32 +192,25 @@ namespace MiddlewareAuth.Middleware
                         }
                         break;
                     }
-                case ClaimLocation.None:
                 default:
                     return string.Empty;
             }
             return string.Empty;
         }
 
-        private List<KeyValuePair<string, List<object>>> IQueryCollectionToKvp(IQueryCollection iqc)
+        private static List<KeyValuePair<string, List<object>>> QueryCollectionToKvp(IQueryCollection iqc)
         {
-            var result = new List<KeyValuePair<string, List<object>>>();
-            foreach (var key in iqc.Keys)
-            {
-                result.Add(new KeyValuePair<string, List<object>>(key,
-                    iqc[key].ToArray().Select(x => (object)x).ToList()));
-            }
-            return result;
+            return iqc.Keys.Select(key => new KeyValuePair<string, List<object>>(key, iqc[key].ToArray().Select(x => (object)x).ToList())).ToList();
         }
 
-        private List<KeyValuePair<string, List<object>>> IHeaderDictToKvp(IEnumerable<KeyValuePair<string, StringValues>> arg, IHeaderDictionary dict)
+        private static List<KeyValuePair<string, List<object>>> HeaderDictToKvp(IEnumerable<KeyValuePair<string, StringValues>> arg, IHeaderDictionary dict)
         {
             return arg.Select(x =>
                 new KeyValuePair<string, List<object>>(x.Key,
                     dict.GetCommaSeparatedValues(x.Key).Select(y => (object)y).ToList())).ToList();
         }
 
-        private List<KeyValuePair<string, List<object>>> RouteValueDictionaryToKvp(IDictionary<string, object> arg)
+        private static List<KeyValuePair<string, List<object>>> RouteValueDictionaryToKvp(IDictionary<string, object> arg)
         {
             return arg.Select(x => new KeyValuePair<string, List<object>>(x.Key, new List<object> { x.Value })).ToList();
         }

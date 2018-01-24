@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
-using System.Linq;
 using MiddlewareAuth.Extensions;
 
 namespace MiddlewareAuth.Auth
@@ -25,7 +23,7 @@ namespace MiddlewareAuth.Auth
         {
             try
             {
-                var claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(tokenString, validationParameters, out SecurityToken validatedToken);
+                var claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(tokenString, validationParameters, out var validatedToken);
                 return new KeyValuePair<ClaimsPrincipal, SecurityToken>(claimsPrincipal, validatedToken);
             }
             catch (Exception)
@@ -34,7 +32,7 @@ namespace MiddlewareAuth.Auth
             }
         }
 
-        private static IList<Claim> GetPayloadClaims(IList<Claim> claims, TokenIssuancePolicy policy)
+        private static IEnumerable<Claim> GetPayloadClaims(IEnumerable<Claim> claims, TokenIssuancePolicy policy)
         {
             var useDefaultIss = true;
             var useDefaultNbf = true;
@@ -48,34 +46,31 @@ namespace MiddlewareAuth.Auth
 
             foreach (var claim in claims)
             {
-                if (claim.Type == JwtRegisteredClaimNames.Iss)
+                switch (claim.Type)
                 {
-                    payloadClaims.Add(!string.IsNullOrEmpty(claim.Value) ? claim : GetClaimFromPolicy_Iss(policy));
-                    useDefaultIss = false;
-                }
-                else if (claim.Type == JwtRegisteredClaimNames.Nbf)
-                {
-                    payloadClaims.Add(!string.IsNullOrEmpty(claim.Value) ? claim : GetClaimFromPolicy_Nbf(policy));
-                    useDefaultNbf = false;
-                }
-                else if (claim.Type == JwtRegisteredClaimNames.Exp)
-                {
-                    payloadClaims.Add(!string.IsNullOrEmpty(claim.Value) ? claim : GetClaimFromPolicy_Exp(policy));
-                    useDefaultExp = false;
-                }
-                else if (claim.Type == JwtRegisteredClaimNames.Iat)
-                {
-                    payloadClaims.Add(!string.IsNullOrEmpty(claim.Value) ? claim : GetClaimFromPolicy_Iat(policy));
-                    useDefaultIat = false;
-                }
-                else if (claim.Type == JwtRegisteredClaimNames.Jti)
-                {
-                    payloadClaims.Add(!string.IsNullOrEmpty(claim.Value) ? claim : GetClaimFromPolicy_Jti(policy));
-                    useDefaultJti = false;
-                }
-                else
-                {
-                    payloadClaims.Add(claim);
+                    case JwtRegisteredClaimNames.Iss:
+                        payloadClaims.Add(!string.IsNullOrEmpty(claim.Value) ? claim : GetClaimFromPolicy_Iss(policy));
+                        useDefaultIss = false;
+                        break;
+                    case JwtRegisteredClaimNames.Nbf:
+                        payloadClaims.Add(!string.IsNullOrEmpty(claim.Value) ? claim : GetClaimFromPolicy_Nbf(policy));
+                        useDefaultNbf = false;
+                        break;
+                    case JwtRegisteredClaimNames.Exp:
+                        payloadClaims.Add(!string.IsNullOrEmpty(claim.Value) ? claim : GetClaimFromPolicy_Exp(policy));
+                        useDefaultExp = false;
+                        break;
+                    case JwtRegisteredClaimNames.Iat:
+                        payloadClaims.Add(!string.IsNullOrEmpty(claim.Value) ? claim : GetClaimFromPolicy_Iat(policy));
+                        useDefaultIat = false;
+                        break;
+                    case JwtRegisteredClaimNames.Jti:
+                        payloadClaims.Add(!string.IsNullOrEmpty(claim.Value) ? claim : GetClaimFromPolicy_Jti(policy));
+                        useDefaultJti = false;
+                        break;
+                    default:
+                        payloadClaims.Add(claim);
+                        break;
                 }
             }
             if (useDefaultExp)
