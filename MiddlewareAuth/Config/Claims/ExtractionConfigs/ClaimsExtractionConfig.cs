@@ -1,6 +1,5 @@
-﻿using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
+using System;
 
 namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
 {
@@ -17,12 +16,5 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
         protected ExtractionType ExtractionType { get; set; }
         public string ClaimName { get; protected set; }
         public abstract IValidClaimsExtractionConfig Build();
-    }
-
-    public interface IValidClaimsExtractionConfig
-    {
-        ExtractionType ExtractionType { get; }
-        ClaimLocation ClaimLocation { get; }
-        Task<Claim> GetClaimAsync(string content);
     }
 }

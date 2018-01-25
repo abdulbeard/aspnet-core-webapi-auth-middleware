@@ -1,14 +1,21 @@
 ﻿using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
 
 namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
 {
+    /// <summary>
+    /// Helps you extract a claim from an object of type <see cref="{T}"/>
+    /// </summary>
+    /// <typeparam name="T">type of request entity</typeparam>
     public class TypeClaimExtractionConfig<T> : ClaimsExtractionConfig
     {
-        private Func<T, Task<string>> _typeExtraction;
+        private ExtractClaimForTypeAsync _typeExtraction;
 
+        /// <summary>
+        /// creates a new <see cref="TypeClaimExtractionConfig{T}"/>
+        /// </summary>
+        /// <param name="claimName">name of the claim to be extracted</param>
         public TypeClaimExtractionConfig(string claimName) : base(claimName)
         {
             ClaimName = claimName;
@@ -16,11 +23,19 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
             ExtractionType = ExtractionType.Type;
         }
 
-        public void ConfigureExtraction(Func<T, Task<string>> func)
+        /// <summary>
+        /// Configures <see cref="this"/> by setting its extraction function />
+        /// </summary>
+        /// <param name="func">function used to extract claim value</param>
+        public void ConfigureExtraction(ExtractClaimForTypeAsync func)
         {
             _typeExtraction = func;
         }
 
+        /// <summary>
+        /// Builds and returns a <see cref="IValidClaimsExtractionConfig"/> to be used for claim extraction
+        /// </summary>
+        /// <returns></returns>
         public override IValidClaimsExtractionConfig Build()
         {
             if (_typeExtraction == null)
@@ -29,27 +44,12 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
             }
             return new ValidTypeClaimExtractionConfig<T>(_typeExtraction, ClaimName, Location);
         }
-    }
 
-    public class ValidTypeClaimExtractionConfig<T> : IValidClaimsExtractionConfig
-    {
-        private readonly Func<T, Task<string>> _typeExtraction;
-        private readonly string _claimName;
-
-        public ValidTypeClaimExtractionConfig(Func<T, Task<string>> func, string claim, ClaimLocation location)
-        {
-            _typeExtraction = func;
-            _claimName = claim;
-            ClaimLocation = location;
-        }
-
-        public ExtractionType ExtractionType => ExtractionType.Type;
-        public ClaimLocation ClaimLocation { get; }
-
-        public async Task<Claim> GetClaimAsync(string content)
-        {
-            var value = await _typeExtraction(JsonConvert.DeserializeObject<T>(content)).ConfigureAwait(false);
-            return new Claim(_claimName, value);
-        }
-    }
+        /// <summary>
+        /// This function takes in a <see cref="{T}"/> and returns the value of the extracted claim. <see cref="{T}"/> could be e.g. deserialized http request body
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public delegate Task<string> ExtractClaimForTypeAsync(T entity);
+    }    
 }

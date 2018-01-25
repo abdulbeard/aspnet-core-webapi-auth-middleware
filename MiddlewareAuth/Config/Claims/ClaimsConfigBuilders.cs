@@ -1,4 +1,4 @@
-﻿using MiddlewareAuth.Config.Claims.ExtractionConfigs;
+﻿using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
 
 namespace MiddlewareAuth.Config.Claims
 {

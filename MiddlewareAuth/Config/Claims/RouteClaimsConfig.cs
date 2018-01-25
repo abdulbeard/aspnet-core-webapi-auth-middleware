@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Dynamic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using MiddlewareAuth.Config.Claims.ExtractionConfigs;
+using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
 
 namespace MiddlewareAuth.Config.Claims
 {
@@ -29,8 +28,16 @@ namespace MiddlewareAuth.Config.Claims
             response.Message = "The following claims require values";
             Response = response;
         }
+        public IHeaderDictionary Headers { get; set; }
         public HttpStatusCode HttpStatusCode { get; set; }
         public ExpandoObject Response { get; set; }
-        public Func<IEnumerable<string>, Task<HttpResponse>> MissingClaimsResponseOverride { get; set; }
+        public MissingClaimsResponseOverride MissingClaimsResponseOverride { get; set; }
     }
+
+    /// <summary>
+    /// Function that returns <see cref="HttpResponse"/> which overrides the response defined by <see cref="MissingClaimsResponse"/>
+    /// </summary>
+    /// <param name="missingClaims">list of missing claims</param>
+    /// <returns></returns>
+    public delegate Task<HttpResponse> MissingClaimsResponseOverride(IEnumerable<string> missingClaims);
 }

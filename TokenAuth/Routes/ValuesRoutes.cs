@@ -1,20 +1,18 @@
 ﻿using MiddlewareAuth.Config.Routing;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Threading.Tasks;
 using MiddlewareAuth.Config.Claims;
 using MiddlewareAuth.Config.Claims.ExtractionConfigs;
-using MiddlewareAuth.Utils;
 using TokenAuth.Models;
 using MiddlewareAuth.Config;
 using System.Dynamic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Primitives;
 using System.IO;
+using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
 
 namespace TokenAuth.Routes
 {
@@ -78,10 +76,10 @@ namespace TokenAuth.Routes
                         {
                             HttpStatusCode = System.Net.HttpStatusCode.Forbidden,
                             Response = GetMissingClaimsResponse(),
-                            //MissingClaimsResponseOverride = (missingClaims) =>
-                            //{
-                            //    return Task.FromResult(GetSampleResponse());
-                            //}
+                            MissingClaimsResponseOverride = (missingClaims) =>
+                            {
+                                return Task.FromResult(GetSampleResponse());
+                            }
                         }
                     }
                 }
@@ -98,8 +96,10 @@ namespace TokenAuth.Routes
 
         private HttpResponse GetSampleResponse()
         {
-            var response = new DefaultHttpResponse(new DefaultHttpContext());
-            response.Body = new MemoryStream();
+            var response = new DefaultHttpResponse(new DefaultHttpContext())
+            {
+                Body = new MemoryStream()
+            };
             var responseBytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new { Yolo = "nolo" }));
             response.Body.WriteAsync(responseBytes, 0, responseBytes.Length);
             response.Headers.Add(new KeyValuePair<string, StringValues>("yolo", new StringValues("solo")));

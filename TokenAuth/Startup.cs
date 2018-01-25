@@ -22,6 +22,7 @@ namespace TokenAuth
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddMemoryCache();
             services.AddSingleton(typeof(MiddlewareAuth.Config.ConfigurationManager), new MiddlewareAuth.Config.ConfigurationManager());
         }
 
@@ -33,6 +34,7 @@ namespace TokenAuth
                 app.UseDeveloperExceptionPage();
             }
             app.UseCustomClaimsValidation(new List<IRouteDefinitions> { new ValuesRoutes() });
+            app.UseCustomClaimsValidationAsync(null).Wait();
             app.UseMvc();
         }
     }

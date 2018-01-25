@@ -1,15 +1,24 @@
-﻿using System;
+﻿using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
+using System;
 using System.ComponentModel;
-using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
 {
+    /// <summary>
+    /// Uses <see cref="Regex"/> to extract claim value
+    /// </summary>
     public class RegexClaimExtractionConfig : ClaimsExtractionConfig
     {
-        private Func<string, Regex, Task<string>> _regExExtraction;
+        private ExtractValueByRegexAsync _regExExtraction;
         private Regex _regex;
+
+        /// <summary>
+        /// creates a new <see cref="RegexClaimExtractionConfig"/>
+        /// </summary>
+        /// <param name="claimName">name of claim</param>
+        /// <param name="location"><see cref="ClaimLocation"/> location of the claim</param>
         public RegexClaimExtractionConfig(string claimName, ClaimLocation location) : base(claimName)
         {
             if (!(location == ClaimLocation.Uri || location == ClaimLocation.Body))
@@ -23,18 +32,22 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
         }
 
         /// <summary>
-        /// 
+        /// configures this <see cref="RegexClaimExtractionConfig"/> for extraction
         /// </summary>
-        /// <param name="func">takes in json as 1st arg, a <see cref="Regex"/> as 2nd arg, and returns the string value of the regex match</param>
+        /// <param name="func"><see cref="ExtractValueByRegexAsync"/></param>
         /// <param name="extractionRegex">the <see cref="Regex"/> used to extract the claim value</param>
         /// <returns></returns>
-        public ClaimsExtractionConfig ConfigureExtraction(Func<string, Regex, Task<string>> func, Regex extractionRegex)
+        public ClaimsExtractionConfig ConfigureExtraction(ExtractValueByRegexAsync func, Regex extractionRegex)
         {
             _regExExtraction = func;
             _regex = extractionRegex;
             return this;
         }
 
+        /// <summary>
+        /// returns <see cref="IValidClaimsExtractionConfig"/> after validating this <see cref="RegexClaimExtractionConfig"/>
+        /// </summary>
+        /// <returns></returns>
         public override IValidClaimsExtractionConfig Build()
         {
             if (_regExExtraction == null)
@@ -47,29 +60,13 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
             }
             return new ValidRegexClaimExtractionConfig(_regExExtraction, _regex, ClaimName, Location);
         }
-    }
 
-    public class ValidRegexClaimExtractionConfig : IValidClaimsExtractionConfig
-    {
-        private Func<string, Regex, Task<string>> _regExExtraction;
-        private Regex _regex;
-        private string _claimName;
-
-        public ValidRegexClaimExtractionConfig(Func<string, Regex, Task<string>> func, Regex regex, string claim, ClaimLocation location)
-        {
-            _regExExtraction = func;
-            _regex = regex;
-            _claimName = claim;
-            ClaimLocation = location;
-        }
-
-        public ExtractionType ExtractionType => ExtractionType.RegEx;
-        public ClaimLocation ClaimLocation { get; }
-
-        public async Task<Claim> GetClaimAsync(string content)
-        {
-            var regexValue = await _regExExtraction(content, _regex).ConfigureAwait(false);
-            return new Claim(_claimName, regexValue);
-        }
-    }
+        /// <summary>
+        /// extracts and returns claim value by applying the provided regex to the provided content
+        /// </summary>
+        /// <param name="content">content</param>
+        /// <param name="regex"><see cref="Regex"/></param>
+        /// <returns></returns>
+        public delegate Task<string> ExtractValueByRegexAsync(string content, Regex regex);
+    }    
 }

@@ -1,13 +1,21 @@
-﻿using System;
-using System.Security.Claims;
+﻿using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
+using System;
 using System.Threading.Tasks;
 
 namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
 {
+    /// <summary>
+    /// Defines configuration for extracting claim value from json using jsonPath
+    /// </summary>
     public class JsonPathClaimExtractionConfig : ClaimsExtractionConfig
     {
-        private Func<string, string, Task<string>> _jsonPathExtraction;
+        private ExtractValueByJsonPathAsync _extractionFunc;
         private string _path;
+
+        /// <summary>
+        /// creates new <see cref="JsonPathClaimExtractionConfig"/>
+        /// </summary>
+        /// <param name="claimName">name of the claim to be extracted</param>
         public JsonPathClaimExtractionConfig(string claimName) : base(claimName)
         {
             ClaimName = claimName;
@@ -16,21 +24,25 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
         }
 
         /// <summary>
-        /// Takes in a function and extractionPath and configures this <see cref="JsonPathClaimExtractionConfig"/> to use these arguments for claim extraction
+        /// Takes in a delegate of type <see cref="ExtractValueByJsonPathAsync" /> and extractionPath and configures this <see cref="JsonPathClaimExtractionConfig"/> to use these arguments for claim extraction
         /// </summary>
-        /// <param name="func">takes in json as 1st arg, extraction path as 2nd arg, and returns the value of json extraction</param>
-        /// <param name="extractionPath">the path at which the desired value is found in the json. Standard jsonPath syntax used as accepted by JSON.NET i.e. https://www.newtonsoft.com/json/help/html/QueryJsonSelectTokenJsonPath.htm </param>
+        /// <param name="func"><see cref="ExtractValueByJsonPathAsync"/></param>
+        /// <param name="extractionPath">the jsonPath to be used for extraction </param>
         /// <returns></returns>
-        public ClaimsExtractionConfig ConfigureExtraction(Func<string, string, Task<string>> func, string extractionPath)
+        public ClaimsExtractionConfig ConfigureExtraction(ExtractValueByJsonPathAsync func, string extractionPath)
         {
-            _jsonPathExtraction = func;
+            _extractionFunc = func;
             _path = extractionPath;
             return this;
         }
 
+        /// <summary>
+        /// Builds <see cref="JsonPathClaimExtractionConfig"/> into a <see cref="IValidClaimsExtractionConfig"/> after checking for validity
+        /// </summary>
+        /// <returns><see cref="IValidClaimsExtractionConfig"/></returns>
         public override IValidClaimsExtractionConfig Build()
         {
-            if (_jsonPathExtraction == null)
+            if (_extractionFunc == null)
             {
                 throw new ArgumentException($"Extraction function can't be null. Use {nameof(ConfigureExtraction)} method to configure it first.");
             }
@@ -38,34 +50,15 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
             {
                 throw new ArgumentException($"{nameof(_path)} can't be null or empty. Use {nameof(ConfigureExtraction)} method to configure it first.");
             }
-            return new ValidJsonPathClaimExtractionConfig(_path, _jsonPathExtraction, ClaimName, Location);
-        }
-    }
-
-    public class ValidJsonPathClaimExtractionConfig : IValidClaimsExtractionConfig
-    {
-        private readonly Func<string, string, Task<string>> _jsonPathExtraction;
-        private readonly string _path;
-        private readonly string _claimName;
-        public ValidJsonPathClaimExtractionConfig(string path, Func<string, string, Task<string>> jsonPathExtraction, string claimName, ClaimLocation location)
-        {
-            _path = path;
-            _jsonPathExtraction = jsonPathExtraction;
-            _claimName = claimName;
-            ClaimLocation = location;
+            return new ValidJsonPathClaimExtractionConfig(_path, _extractionFunc, ClaimName, Location);
         }
 
-        public ExtractionType ExtractionType => ExtractionType.JsonPath;
-        public ClaimLocation ClaimLocation { get; }
-
-        public async Task<Claim> GetClaimAsync(string content)
-        {
-            if (content == null)
-            {
-                return null;
-            }
-            var claimValue = await _jsonPathExtraction(content, _path).ConfigureAwait(false);
-            return new Claim(_claimName, claimValue);
-        }
+        /// <summary>
+        /// This delegate takes in json as 1st arg, jsonPath as 2nd arg, and returns the value of json extraction
+        /// </summary>
+        /// <param name="json">raw json</param>
+        /// <param name="jsonPath">the path at which the desired value is found in the json. Standard jsonPath syntax used as accepted by JSON.NET i.e. https://www.newtonsoft.com/json/help/html/QueryJsonSelectTokenJsonPath.htm </param>
+        /// <returns>string value of the json path extraction</returns>
+        public delegate Task<string> ExtractValueByJsonPathAsync(string json, string jsonPath);
     }
 }

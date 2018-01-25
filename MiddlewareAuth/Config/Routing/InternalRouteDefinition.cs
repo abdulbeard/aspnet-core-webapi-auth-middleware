@@ -11,7 +11,6 @@ namespace MiddlewareAuth.Config.Routing
     {
         [JsonConstructor]
         internal InternalRouteDefinition() { }
-        //[JsonConstructor]
         internal InternalRouteDefinition(RouteDefinition routeDef)
         {
             Method = routeDef.Method();

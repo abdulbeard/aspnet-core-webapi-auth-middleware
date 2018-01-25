@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Primitives;
 using MiddlewareAuth.Config;
 using MiddlewareAuth.Config.Claims;
-using MiddlewareAuth.Config.Claims.ExtractionConfigs;
 using Newtonsoft.Json;
 using TokenAuth.Utils;
+using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
 
 namespace MiddlewareAuth.Middleware
 {
@@ -30,9 +30,9 @@ namespace MiddlewareAuth.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            var dict = configurationManager.GetFromJsonAppsetting<Dictionary<string, List<InternalRouteDefinition>>>(
-                "routeClaimsConfig");
-            _routes = dict;
+            //var dict = configurationManager.GetFromJsonAppsetting<Dictionary<string, List<InternalRouteDefinition>>>(
+            //    "routeClaimsConfig");
+            //_routes = dict;
 
 
             var matchedRouteResult = MatchRoute(context);
@@ -50,7 +50,7 @@ namespace MiddlewareAuth.Middleware
 
         internal static void RegisterRoutes(Dictionary<string, List<InternalRouteDefinition>> routeDefs)
         {
-            System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(routeDefs));
+            //System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(routeDefs));
 
             _routes = routeDefs;
         }
@@ -85,6 +85,7 @@ namespace MiddlewareAuth.Middleware
         {
             if (missingClaimsResponse.MissingClaimsResponseOverride == null)
             {
+                missingClaimsResponse.Headers.ToList().ForEach(x => context.Response.Headers.AppendList(x.Key, x.Value));
                 context.Response.StatusCode = (int)missingClaimsResponse.HttpStatusCode;
                 dynamic dynamicMissingClaimsResponseResponse = missingClaimsResponse.Response;
                 dynamicMissingClaimsResponseResponse.Data = missingClaims;

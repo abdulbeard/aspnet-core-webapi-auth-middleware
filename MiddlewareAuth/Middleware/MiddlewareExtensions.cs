@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using MiddlewareAuth.Config.Routing;
+using MiddlewareAuth.Config;
+using System.Threading.Tasks;
 
 namespace MiddlewareAuth.Middleware
 {
@@ -10,6 +12,12 @@ namespace MiddlewareAuth.Middleware
         public static IApplicationBuilder UseCustomClaimsValidation(this IApplicationBuilder app, IEnumerable<IRouteDefinitions> routeDefs)
         {
             CustomClaimsValidationMiddleware.RegisterRoutes(GetValidRouteDefs(routeDefs));
+            return app.UseMiddleware<CustomClaimsValidationMiddleware>();
+        }
+
+        public static async Task<IApplicationBuilder> UseCustomClaimsValidationAsync(this IApplicationBuilder app, IValidRouteDefinitionProvider validRouteDefinitionProvider)
+        {
+            CustomClaimsValidationMiddleware.RegisterRoutes(GetValidRouteDefs(await validRouteDefinitionProvider.GetAsync().ConfigureAwait(false)));
             return app.UseMiddleware<CustomClaimsValidationMiddleware>();
         }
 
