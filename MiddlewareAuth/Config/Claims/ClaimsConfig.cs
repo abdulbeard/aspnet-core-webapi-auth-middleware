@@ -17,4 +17,11 @@
         RegEx = 3,
         KeyValue = 4
     }
+
+    public enum SerializableExtractionType
+    {
+        JsonPath = 0,
+        RegEx = 1,
+        KeyValue = 2
+    }
 }
