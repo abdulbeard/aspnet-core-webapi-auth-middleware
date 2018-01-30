@@ -50,8 +50,6 @@ namespace MiddlewareAuth.Middleware
 
         internal static void RegisterRoutes(Dictionary<string, List<InternalRouteDefinition>> routeDefs)
         {
-            //System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(routeDefs));
-
             _routes = routeDefs;
         }
 

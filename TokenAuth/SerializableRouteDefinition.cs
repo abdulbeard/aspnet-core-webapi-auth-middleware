@@ -13,11 +13,16 @@ namespace TokenAuth
 {
     public class SerializableRouteDefinition : IRouteDefinitions
     {
-        private List<SerializableRouteConfig> routes;
+        public SerializableRouteDefinition(List<SerializableRouteConfig> routes)
+        {
+            _routes = routes;
+        }
+
+        private List<SerializableRouteConfig> _routes;
 
         public List<RouteDefinition> GetRouteDefinitions()
         {
-            return routes?.Select(x => (RouteDefinition)x).ToList() ?? new List<RouteDefinition>();
+            return _routes?.Select(x => (RouteDefinition)x).ToList() ?? new List<RouteDefinition>();
         }
     }
 
