@@ -44,7 +44,7 @@ namespace TokenAuth
 
     public class SerializableRouteClaimsConfig : RouteClaimsConfig
     {
-        public new IList<SerializableClaimsExtractionConfig> ExtractionConfigs { get; set; }
+        public new IList<IValidClaimsExtractionConfig> ExtractionConfigs { get; set; }
     }
 
     public class SerializableClaimsExtractionConfig : ClaimsExtractionConfig

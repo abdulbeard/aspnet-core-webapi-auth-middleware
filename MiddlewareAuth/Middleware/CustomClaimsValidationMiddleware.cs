@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing.Template;
 using MiddlewareAuth.Config.Routing;
 using System.Collections.Generic;
@@ -11,31 +12,24 @@ using Microsoft.Extensions.Primitives;
 using MiddlewareAuth.Config;
 using MiddlewareAuth.Config.Claims;
 using Newtonsoft.Json;
-using TokenAuth.Utils;
 using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
+using MiddlewareAuth.Repositories;
+using MiddlewareAuth.Utils;
 
 namespace MiddlewareAuth.Middleware
 {
     public class CustomClaimsValidationMiddleware
     {
         private readonly RequestDelegate _next;
-        private static Dictionary<string, List<InternalRouteDefinition>> _routes;
-        private static ConfigurationManager configurationManager;
 
-        public CustomClaimsValidationMiddleware(RequestDelegate next, ConfigurationManager configurationManager)
+        public CustomClaimsValidationMiddleware(RequestDelegate next)
         {
             _next = next;
-            CustomClaimsValidationMiddleware.configurationManager = configurationManager;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            //var dict = configurationManager.GetFromJsonAppsetting<Dictionary<string, List<InternalRouteDefinition>>>(
-            //    "routeClaimsConfig");
-            //_routes = dict;
-
-
-            var matchedRouteResult = MatchRoute(context);
+            var matchedRouteResult = await MatchRouteAsync(context).ConfigureAwait(false);
             if (matchedRouteResult.Key != null)
             {
                 if (!(await ValidateClaimsAsync(matchedRouteResult.Key, context, matchedRouteResult.Value)
@@ -48,14 +42,9 @@ namespace MiddlewareAuth.Middleware
             await _next(context).ConfigureAwait(false);
         }
 
-        internal static void RegisterRoutes(Dictionary<string, List<InternalRouteDefinition>> routeDefs)
+        private static async Task<KeyValuePair<InternalRouteDefinition, RouteValueDictionary>> MatchRouteAsync(HttpContext context)
         {
-            _routes = routeDefs;
-        }
-
-        private static KeyValuePair<InternalRouteDefinition, RouteValueDictionary> MatchRoute(HttpContext context)
-        {
-            foreach (var route in _routes[context.Request.Method])
+            foreach (var route in (await RoutesRepository.GetRoutesAsync().ConfigureAwait(false))[context.Request.Method])
             {
                 var templateMatcher = new TemplateMatcher(route.RouteTemplate, RoutesUtils.GetDefaults(route.RouteTemplate));
                 var routeValues = RoutesUtils.GetDefaults(route.RouteTemplate);
@@ -79,7 +68,7 @@ namespace MiddlewareAuth.Middleware
             return true;
         }
 
-        private static async Task CreateResponse(List<string> missingClaims, HttpContext context, MissingClaimsResponse missingClaimsResponse)
+        private static async Task CreateResponse(IReadOnlyCollection<string> missingClaims, HttpContext context, MissingClaimsResponse missingClaimsResponse)
         {
             if (missingClaimsResponse.MissingClaimsResponseOverride == null)
             {
@@ -181,13 +170,12 @@ namespace MiddlewareAuth.Middleware
                     }
                 case ClaimLocation.QueryParameters:
                     {
-                        if (extType == ExtractionType.KeyValue)
+                        switch (extType)
                         {
-                            return JsonConvert.SerializeObject(QueryCollectionToKvp(req.Query));
-                        }
-                        if (extType == ExtractionType.RegEx)
-                        {
-                            return req.QueryString.ToString();
+                            case ExtractionType.KeyValue:
+                                return JsonConvert.SerializeObject(QueryCollectionToKvp(req.Query));
+                            case ExtractionType.RegEx:
+                                return req.QueryString.ToString();
                         }
                         break;
                     }

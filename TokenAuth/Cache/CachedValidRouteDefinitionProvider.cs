@@ -1,42 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using MiddlewareAuth.Config;
 using MiddlewareAuth.Config.Claims;
+using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
 using MiddlewareAuth.Config.Routing;
 
 namespace TokenAuth.Cache
 {
     public class CachedValidRouteDefinitionProvider : IValidRouteDefinitionProvider
     {
-        private IMemoryCache objectCache;
+        private readonly IMemoryCache _objectCache;
         public CachedValidRouteDefinitionProvider(IMemoryCache memoryCache)
         {
-            objectCache = memoryCache;
+            _objectCache = memoryCache;
         }
 
         public async Task<IEnumerable<IRouteDefinitions>> GetAsync()
         {
-            return await GetRouteDefinitions().ConfigureAwait(false);
+            return await GetRouteDefinitionsFromCacheAsync().ConfigureAwait(false);
         }
 
-        private async Task<string> RefreshCache(ICacheEntry cacheEntry)
+        private Task<IEnumerable<IRouteDefinitions>> GetRouteDefinitionsFromCacheAsync()
         {
-            cacheEntry.AbsoluteExpiration = DateTime.Now + TimeSpan.FromMinutes(1);
-            cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1);
-            cacheEntry.SlidingExpiration = TimeSpan.FromMinutes(1);
-            cacheEntry.RegisterPostEvictionCallback((key, value, evictionReason, state) =>
+            var result = _objectCache.GetOrCreate("supahDupahExpensiveStuff", (entry) =>
             {
-
+                entry.AbsoluteExpiration = DateTime.Now + TimeSpan.FromMinutes(1);
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1);
+                entry.SlidingExpiration = TimeSpan.FromMinutes(1);
+                return GetRouteDefinitions();
             });
-            return await GetCacheString().ConfigureAwait(false);
+            return Task.FromResult(result);
         }
 
-        private async Task<IEnumerable<IRouteDefinitions>> GetRouteDefinitions()
+        private IEnumerable<IRouteDefinitions> GetRouteDefinitions()
         {
             var routeDefs = new List<SerializableRouteDefinition>();
             dynamic response = new ExpandoObject();
@@ -56,9 +56,9 @@ namespace TokenAuth.Cache
                             Response =  response,
                             Headers = new HeaderDictionary()
                         },
-                        ExtractionConfigs = new List<SerializableClaimsExtractionConfig>
+                        ExtractionConfigs = new List<IValidClaimsExtractionConfig>
                         {
-                            new SerializableClaimsExtractionConfig("AltruisticAlignment")
+                            new SerializableClaimsExtractionConfig("AltruisticAlignment").Build()
                         },
                         ValidationConfig = new List<ClaimValidationConfig>
                         {
@@ -66,24 +66,12 @@ namespace TokenAuth.Cache
                             {
                                 ClaimName = "AltruisticAlignment",
                                 IsRequired = true
-                            }                        
+                            }
                         }
                     }
                 }
             }));
             return routeDefs;
-        }
-
-        public async Task<string> GetCacheString()
-        {
-            var result = await objectCache.GetOrCreateAsync("yolo", (entry) =>
-            {
-                entry.AbsoluteExpiration = DateTime.Now + TimeSpan.FromMinutes(1);
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1);
-                entry.SlidingExpiration = TimeSpan.FromMinutes(1);
-                return Task.FromResult("superDuperExpensiveToCreateString");
-            });
-            return result;
         }
     }
 }

@@ -35,7 +35,7 @@ namespace TokenAuth
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCustomClaimsValidation(new List<IRouteDefinitions> { new ValuesRoutes() });
+            app.UseCustomClaimsValidationAsync(new List<IRouteDefinitions> { new ValuesRoutes() }).Wait();
             app.UseCustomClaimsValidationAsync(new CachedValidRouteDefinitionProvider(memoryCache)).Wait();
             app.UseMvc();
         }
