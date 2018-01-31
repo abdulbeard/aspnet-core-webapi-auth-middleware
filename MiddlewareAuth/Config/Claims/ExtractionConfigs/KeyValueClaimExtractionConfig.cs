@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
 using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
-using Newtonsoft.Json;
 
 namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
 {
     /// <summary>
-    /// Used on a list of <see cref="KeyValuePair{string, List{object}"/> to extract a claim
+    /// Used on a list of <see cref="KeyValuePair{string, List{object}}"/> to extract a claim
     /// </summary>
     public class KeyValueClaimExtractionConfig : ClaimsExtractionConfig
     {
@@ -61,9 +56,9 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
         }
 
         /// <summary>
-        /// Delegate that takes in a <see cref="List{KeyValuePair{String, List{object}}"/> and a <see cref="string"/> key and returns the extracted claim value
+        /// Delegate that takes in a <see cref="List{KeyValuePair{string, List{object}}"/> and a <see cref="string"/> key and returns the extracted claim value
         /// </summary>
-        /// <param name="dictionary"><see cref="List{KeyValuePair{String, List{object}}"/></param>
+        /// <param name="dictionary"><see cref="List{KeyValuePair{string, List{object}}"/></param>
         /// <param name="key">key</param>
         /// <returns></returns>
         public delegate Task<string> KeyValueExtractionAsync(List<KeyValuePair<string, List<object>>> dictionary, string key);

@@ -36,7 +36,7 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid
         /// <summary>
         /// extracts and returns claim
         /// </summary>
-        /// <param name="content"><see cref="List{KeyValuePair{String, List{object}}"/> as JSON</param>
+        /// <param name="content"><see cref="List{KeyValuePair{string, List{object}}}"/> as JSON</param>
         /// <returns></returns>
         public async Task<Claim> GetClaimAsync(string content)
         {

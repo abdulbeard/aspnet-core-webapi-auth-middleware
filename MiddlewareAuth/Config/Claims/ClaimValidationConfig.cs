@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace MiddlewareAuth.Config.Claims
+﻿namespace MiddlewareAuth.Config.Claims
 {
     public class ClaimValidationConfig
     {

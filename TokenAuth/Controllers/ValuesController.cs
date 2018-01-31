@@ -8,37 +8,29 @@ namespace TokenAuth.Controllers
     [Route(ValuesRoutes.Prefix)]
     public class ValuesController : Controller
     {
-        readonly MiddlewareAuth.Config.ConfigurationManager configManager;
+        readonly MiddlewareAuth.Config.ConfigurationManager _configManager;
         public ValuesController(MiddlewareAuth.Config.ConfigurationManager configManager)
         {
-            var routeData = RouteData;
-            this.configManager = configManager;
+            _configManager = configManager;
         }
         // GET api/values
         [HttpGet(ValuesRoutes.Get)]
         public IEnumerable<string> Get()
         {
-            //var sdf = Program.Configuration["Logging:Console:LogLevel:Default"];
-            var sdf = configManager.Appsettings<int>("Logging:Console:LogLevel:Count");
-            var context = HttpContext;
-            var routeData = RouteData;
-            return new string[] { "value1", "value2" };
+            var sdf = _configManager.Appsettings<int>("Logging:Console:LogLevel:Count");
+            return new [] { "value1", "value2", sdf.ToString() };
         }
 
         // GET api/values/5
         [HttpGet(ValuesRoutes.GetById)]
-        public string Get(int idklsjdfkljsldjfskldf)
+        public string Get(int id)
         {
-            var context = HttpContext;
-            var routeData = RouteData;
             return "value";
         }
 
         [HttpGet(ValuesRoutes.GetByIdGuid)]
         public string GetByGuid(Guid id, string manafort, Guid manaforts)
         {
-            var context = HttpContext;
-            var routeData = RouteData;
             return "value";
         }
 

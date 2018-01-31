@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing.Template;
 using MiddlewareAuth.Config.Routing;
 using System.Collections.Generic;
@@ -9,7 +8,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Primitives;
-using MiddlewareAuth.Config;
 using MiddlewareAuth.Config.Claims;
 using Newtonsoft.Json;
 using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;

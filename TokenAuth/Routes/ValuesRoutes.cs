@@ -26,7 +26,7 @@ namespace TokenAuth.Routes
         public const string Put = "{id}";
         public const string Delete = "{id}";
         public const string PostMoralValues = "moralValues/{subscriberId}/{kiwiChant}";
-        private const string pathSeparator = "/";
+        private const string PathSeparator = "/";
 
         public List<RouteDefinition> GetRouteDefinitions()
         {
@@ -34,15 +34,15 @@ namespace TokenAuth.Routes
             {
                 new PostRouteDefinition(typeof(string))
                 {
-                    RouteTemplate = $"{Prefix}{pathSeparator}{Post}",
+                    RouteTemplate = $"{Prefix}{PathSeparator}{Post}",
                 },
                 new GetRouteDefinition
                 {
-                    RouteTemplate = $"{Prefix}{pathSeparator}{GetByIdGuid}"
+                    RouteTemplate = $"{Prefix}{PathSeparator}{GetByIdGuid}"
                 },
                 new PostRouteDefinition(typeof(MoralValues))
                 {
-                    RouteTemplate = $"{Prefix}{pathSeparator}{PostMoralValues}",
+                    RouteTemplate = $"{Prefix}{PathSeparator}{PostMoralValues}",
                     ClaimsConfig = new RouteClaimsConfig()
                     {
                         ExtractionConfigs = new List<IValidClaimsExtractionConfig>()

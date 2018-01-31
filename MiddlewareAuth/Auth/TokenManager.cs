@@ -61,7 +61,7 @@ namespace MiddlewareAuth.Auth
                         useDefaultExp = false;
                         break;
                     case JwtRegisteredClaimNames.Iat:
-                        payloadClaims.Add(!string.IsNullOrEmpty(claim.Value) ? claim : GetClaimFromPolicy_Iat(policy));
+                        payloadClaims.Add(!string.IsNullOrEmpty(claim.Value) ? claim : GetClaimFromPolicy_Iat());
                         useDefaultIat = false;
                         break;
                     case JwtRegisteredClaimNames.Jti:
@@ -79,7 +79,7 @@ namespace MiddlewareAuth.Auth
             }
             if (useDefaultIat)
             {
-                payloadClaims.Add(GetClaimFromPolicy_Iat(defaultPolicy));
+                payloadClaims.Add(GetClaimFromPolicy_Iat());
             }
             if (useDefaultIss)
             {
@@ -112,7 +112,7 @@ namespace MiddlewareAuth.Auth
         {
             return new Claim(JwtRegisteredClaimNames.Exp, DateTime.UtcNow.Add(policy.Expiration).TotalSecondsSinceEpoch().ToString());
         }
-        private static Claim GetClaimFromPolicy_Iat(TokenIssuancePolicy policy)
+        private static Claim GetClaimFromPolicy_Iat()
         {
             return new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.TotalSecondsSinceEpoch().ToString());
         }

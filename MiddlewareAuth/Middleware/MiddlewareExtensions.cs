@@ -4,7 +4,6 @@ using MiddlewareAuth.Config.Routing;
 using MiddlewareAuth.Config;
 using System.Threading.Tasks;
 using MiddlewareAuth.Repositories;
-using MiddlewareAuth.Utils;
 
 namespace MiddlewareAuth.Middleware
 {
