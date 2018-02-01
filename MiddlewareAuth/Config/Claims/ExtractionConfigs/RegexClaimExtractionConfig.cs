@@ -1,10 +1,10 @@
-﻿using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using MisturTee.Config.Claims.ExtractionConfigs.Valid;
 
-namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
+namespace MisturTee.Config.Claims.ExtractionConfigs
 {
     /// <summary>
     /// Uses <see cref="Regex"/> to extract claim value

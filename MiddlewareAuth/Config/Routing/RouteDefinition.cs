@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Net.Http;
-using MiddlewareAuth.Config.Claims;
+using MisturTee.Config.Claims;
 
-namespace MiddlewareAuth.Config.Routing
+namespace MisturTee.Config.Routing
 {
     public abstract class RouteDefinition
     {

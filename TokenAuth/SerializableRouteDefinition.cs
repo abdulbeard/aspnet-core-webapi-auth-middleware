@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using MiddlewareAuth.Config;
-using MiddlewareAuth.Config.Claims;
-using MiddlewareAuth.Config.Claims.ExtractionConfigs;
-using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
-using MiddlewareAuth.Config.Routing;
+using MisturTee.Config;
+using MisturTee.Config.Claims;
+using MisturTee.Config.Claims.ExtractionConfigs;
+using MisturTee.Config.Claims.ExtractionConfigs.Valid;
+using MisturTee.Config.Routing;
 
 namespace TokenAuth
 {
@@ -45,7 +45,7 @@ namespace TokenAuth
             get => _serializableRouteClaimsConfig;
             set
             {
-                this._serializableRouteClaimsConfig = value;
+                _serializableRouteClaimsConfig = value;
                 base.ClaimsConfig = value;
             }
         }

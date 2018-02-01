@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using MisturTee.Config;
 using TokenAuth.Routes;
 
 namespace TokenAuth.Controllers
@@ -8,8 +9,8 @@ namespace TokenAuth.Controllers
     [Route(ValuesRoutes.Prefix)]
     public class ValuesController : Controller
     {
-        readonly MiddlewareAuth.Config.ConfigurationManager _configManager;
-        public ValuesController(MiddlewareAuth.Config.ConfigurationManager configManager)
+        readonly ConfigurationManager _configManager;
+        public ValuesController(ConfigurationManager configManager)
         {
             _configManager = configManager;
         }

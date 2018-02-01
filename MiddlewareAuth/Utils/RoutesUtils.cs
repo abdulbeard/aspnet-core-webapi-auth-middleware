@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Template;
-using MiddlewareAuth.Config.Routing;
-using MiddlewareAuth.Repositories;
+using MisturTee.Config.Routing;
+using MisturTee.Repositories;
 
-namespace MiddlewareAuth.Utils
+namespace MisturTee.Utils
 {
     public static class RoutesUtils
     {

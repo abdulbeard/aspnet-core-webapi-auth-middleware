@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -34,7 +36,16 @@ namespace TokenAuth.Middleware
                 }
                 else
                 {
-                    context.Items.Add("ExpectedClaims", jwtValidationResult.Key.Claims);
+                    var claims = jwtValidationResult.Key.Claims;
+                    claims = claims.Select(x =>
+                    {
+                        if (string.Equals(x.Type, "supersecretid", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return new Claim(x.Type, TokenManager.SymmetricallyDecryptString(x.Value));
+                        }
+                        return x;
+                    });
+                    context.Items.Add("ExpectedClaims", claims);
                 }
             }
             await _next(context).ConfigureAwait(false);

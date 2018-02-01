@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Primitives;
-using MiddlewareAuth.Config.Claims;
-using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
-using MiddlewareAuth.Config.Routing;
+using MisturTee.Config.Claims;
+using MisturTee.Config.Claims.ExtractionConfigs.Valid;
+using MisturTee.Config.Routing;
 using Newtonsoft.Json;
 
-namespace MiddlewareAuth.Utils
+namespace MisturTee.Utils
 {
     internal class ExtractionUtils
     {

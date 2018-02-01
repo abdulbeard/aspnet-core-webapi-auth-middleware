@@ -1,17 +1,16 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using static MiddlewareAuth.Config.Claims.ExtractionConfigs.KeyValueClaimExtractionConfig;
+using Newtonsoft.Json;
 
-namespace MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid
+namespace MisturTee.Config.Claims.ExtractionConfigs.Valid
 {
     /// <summary>
     /// Valid version of <see cref="KeyValueClaimExtractionConfig"/>
     /// </summary>
     public class ValidKeyValueClaimExtractionConfig : IValidClaimsExtractionConfig
     {
-        private KeyValueExtractionAsync _extract;
+        private KeyValueClaimExtractionConfig.KeyValueExtractionAsync _extract;
         private string _keyName;
         private string _claimName;
 
@@ -22,7 +21,7 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid
         /// <param name="key">key</param>
         /// <param name="location"><see cref="ClaimLocation"/> location of claim</param>
         /// <param name="claimName">name of claim</param>
-        public ValidKeyValueClaimExtractionConfig(KeyValueExtractionAsync func, string key, ClaimLocation location, string claimName)
+        public ValidKeyValueClaimExtractionConfig(KeyValueClaimExtractionConfig.KeyValueExtractionAsync func, string key, ClaimLocation location, string claimName)
         {
             _extract = func;
             _keyName = key;

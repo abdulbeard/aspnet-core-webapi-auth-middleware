@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
-using MiddlewareAuth.Extensions;
+using MisturTee.Extensions;
 
 namespace TokenAuth.Auth
 {
     public class TokenManager
     {
+        private const string Key = "jApKAyYRMOQW1lilWun6RKEmn7914LmXlz0Oa2q5wCg=";
+        private const string Iv = "H1Ykk45i/L66XaXv6Hh6Qg==";
+
         public static readonly TokenValidationParameters DefaultValidationParameters = new TokenValidationParameters
         {
             IssuerSigningKey = new TokenIssuancePolicy().SecurityKey,
@@ -38,6 +43,97 @@ namespace TokenAuth.Auth
             catch (Exception)
             {
                 return new KeyValuePair<ClaimsPrincipal, SecurityToken>(null, null);
+            }
+        }
+
+        public static string SymmetricallyEncryptString(string plainText)
+        {
+            {
+                // Check arguments.
+                if (plainText == null || plainText.Length <= 0)
+                    throw new ArgumentNullException("plainText");
+                if (Key.Length <= 0)
+                    throw new ArgumentNullException(nameof(Key));
+                if (Iv.Length <= 0)
+                    throw new ArgumentNullException(nameof(Iv));
+                byte[] encrypted;
+                // Create an Aes object
+                // with the specified key and IV.
+                using (var aesAlg = Aes.Create())
+                {
+                    aesAlg.Key = Convert.FromBase64String(Key);
+                    aesAlg.IV = Convert.FromBase64String(Iv);
+
+                    // Create a decrytor to perform the stream transform.
+                    var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+                    // Create the streams used for encryption.
+                    using (var msEncrypt = new MemoryStream())
+                    {
+                        using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                        {
+                            using (var swEncrypt = new StreamWriter(csEncrypt))
+                            {
+
+                                //Write all data to the stream.
+                                swEncrypt.Write(plainText);
+                            }
+                            encrypted = msEncrypt.ToArray();
+                        }
+                    }
+                }
+
+
+                // Return the encrypted bytes from the memory stream.
+                return Convert.ToBase64String(encrypted);
+
+            }
+        }
+
+        public static string SymmetricallyDecryptString(string cipherText)
+        {
+            {
+                // Check arguments.
+                if (cipherText == null || cipherText.Length <= 0)
+                    throw new ArgumentNullException("cipherText");
+                if (Key.Length <= 0)
+                    throw new ArgumentNullException(nameof(Key));
+                if (Iv.Length <= 0)
+                    throw new ArgumentNullException(nameof(Iv));
+
+                // Declare the string used to hold
+                // the decrypted text.
+                string plaintext;
+
+                // Create an Aes object
+                // with the specified key and IV.
+                using (var aesAlg = Aes.Create())
+                {
+                    aesAlg.Key = Convert.FromBase64String(Key);
+                    aesAlg.IV = Convert.FromBase64String(Iv);
+
+                    // Create a decrytor to perform the stream transform.
+                    var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                    // Create the streams used for decryption.
+                    using (var msDecrypt = new MemoryStream(Convert.FromBase64String(cipherText)))
+                    {
+                        using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                        {
+                            using (var srDecrypt = new StreamReader(csDecrypt))
+                            {
+
+                                // Read the decrypted bytes from the decrypting stream
+                                // and place them in a string.
+                                plaintext = srDecrypt.ReadToEnd();
+                            }
+                        }
+                    }
+
+                }
+
+                return plaintext;
+
             }
         }
 

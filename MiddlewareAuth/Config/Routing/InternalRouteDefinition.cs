@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Routing.Template;
-using System;
+﻿using System;
 using System.Net.Http;
-using MiddlewareAuth.Config.Claims;
+using Microsoft.AspNetCore.Routing.Template;
+using MisturTee.Config.Claims;
 
-namespace MiddlewareAuth.Config.Routing
+namespace MisturTee.Config.Routing
 {
     internal class InternalRouteDefinition
     {

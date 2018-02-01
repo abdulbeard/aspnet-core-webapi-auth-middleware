@@ -1,6 +1,6 @@
-﻿using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
+﻿using MisturTee.Config.Claims.ExtractionConfigs.Valid;
 
-namespace MiddlewareAuth.Config.Claims
+namespace MisturTee.Config.Claims
 {
     public static class ClaimsConfigBuilders
     {

@@ -2,7 +2,7 @@
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
-namespace MiddlewareAuth.Utils
+namespace MisturTee.Utils
 {
     public class JsonUtils
     {

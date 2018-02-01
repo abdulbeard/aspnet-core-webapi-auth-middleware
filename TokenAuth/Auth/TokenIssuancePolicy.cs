@@ -6,7 +6,7 @@ namespace TokenAuth.Auth
 {
     public class TokenIssuancePolicy
     {
-        public static TokenIssuancePolicy Default = new TokenIssuancePolicy();
+        public static readonly TokenIssuancePolicy Default = new TokenIssuancePolicy();
         private const string Key = "C5AxWRAoC/lp3Ayt1RcAxMQDZ74fy1f6rzA7ko1GME06/FkBhRML1BNLXMwTVeoRAJ2oVvIdTy8b4Px8FgJ7e36hCp6SopZhoAng1HwPtLYg4QUXMfjCjaKEqba4/e5nsZXaJpn9a6CaSFy6WL3PPV5m7ZyFK+jLlhT+X5inqPk=";
         public TokenIssuancePolicy()
         {

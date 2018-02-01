@@ -1,10 +1,10 @@
-﻿using MiddlewareAuth.Utils;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using MisturTee.Utils;
 
-namespace MiddlewareAuth.Config
+namespace MisturTee.Config
 {
     public class ExtractionFunctions
     {

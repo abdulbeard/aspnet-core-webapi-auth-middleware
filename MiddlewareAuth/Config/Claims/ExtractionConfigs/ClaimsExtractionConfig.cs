@@ -1,7 +1,7 @@
-﻿using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
-using System;
+﻿using System;
+using MisturTee.Config.Claims.ExtractionConfigs.Valid;
 
-namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
+namespace MisturTee.Config.Claims.ExtractionConfigs
 {
     public abstract class ClaimsExtractionConfig
     {

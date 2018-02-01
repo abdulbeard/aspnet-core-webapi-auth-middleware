@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MiddlewareAuth.Extensions
+namespace MisturTee.Extensions
 {
     public static class DateTimeExtensions
     {

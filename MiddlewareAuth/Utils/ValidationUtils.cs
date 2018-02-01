@@ -5,10 +5,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using MiddlewareAuth.Config.Claims;
-using MiddlewareAuth.Config.Routing;
+using MisturTee.Config.Claims;
+using MisturTee.Config.Routing;
 
-namespace MiddlewareAuth.Utils
+namespace MisturTee.Utils
 {
     internal static class ValidationUtils
     {

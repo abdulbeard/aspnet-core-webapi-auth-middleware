@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 
-namespace MiddlewareAuth.Config.Routing
+namespace MisturTee.Config.Routing
 {
     public class GetRouteDefinition : RouteDefinition
     {

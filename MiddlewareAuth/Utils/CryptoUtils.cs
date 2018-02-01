@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace MiddlewareAuth.Utils
+namespace MisturTee.Utils
 {
     public class CryptoUtils
     {

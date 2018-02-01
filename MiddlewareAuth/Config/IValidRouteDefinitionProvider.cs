@@ -1,8 +1,8 @@
-﻿using MiddlewareAuth.Config.Routing;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using MisturTee.Config.Routing;
 
-namespace MiddlewareAuth.Config
+namespace MisturTee.Config
 {
     public interface IValidRouteDefinitionProvider
     {

@@ -4,10 +4,10 @@ using System.Dynamic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
-using MiddlewareAuth.Config;
-using MiddlewareAuth.Config.Claims;
-using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
-using MiddlewareAuth.Config.Routing;
+using MisturTee.Config;
+using MisturTee.Config.Claims;
+using MisturTee.Config.Claims.ExtractionConfigs.Valid;
+using MisturTee.Config.Routing;
 
 namespace TokenAuth.Cache
 {
@@ -50,10 +50,10 @@ namespace TokenAuth.Cache
                     RouteTemplate = "values/moralValues/{subscriberId}/{kiwiChant}",
                     ClaimsConfig = new SerializableRouteClaimsConfig
                     {
-                        BadRequestResponse =  new BadRequestResponse
+                        BadRequestResponse = new BadRequestResponse
                         {
                             HttpStatusCode = System.Net.HttpStatusCode.Forbidden,
-                            Response =  response,
+                            Response = response,
                             Headers = new HeaderDictionary()
                         },
                         ExtractionConfigs = new List<IValidClaimsExtractionConfig>
@@ -63,6 +63,12 @@ namespace TokenAuth.Cache
                                 ClaimLocation = ClaimLocation.Body,
                                 ExtractionStrategem = SerializableExtractionType.JsonPath,
                                 Path = "$.ReportViolationEmail"
+                            }.Build(),
+                            new SerializableClaimsExtractionConfig("superSecretId")
+                            {
+                                ClaimLocation = ClaimLocation.Body,
+                                ExtractionStrategem = SerializableExtractionType.JsonPath,
+                                Path = "$.SuperSecretId"
                             }.Build()
                         },
                         ValidationConfigs = new List<ClaimValidationConfig>
@@ -70,6 +76,13 @@ namespace TokenAuth.Cache
                             new ClaimValidationConfig()
                             {
                                 ClaimName = "ReportViolationEmail",
+                                IsRequired = true,
+                                AllowNullOrEmpty = false,
+                                ValueMustBeExactMatch = true
+                            },
+                            new ClaimValidationConfig()
+                            {
+                                ClaimName = "superSecretId",
                                 IsRequired = true,
                                 AllowNullOrEmpty = false,
                                 ValueMustBeExactMatch = true

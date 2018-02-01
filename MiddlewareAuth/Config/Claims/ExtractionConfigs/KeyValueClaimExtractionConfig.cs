@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
+using MisturTee.Config.Claims.ExtractionConfigs.Valid;
 
-namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
+namespace MisturTee.Config.Claims.ExtractionConfigs
 {
     /// <summary>
     /// Used on a list of <see cref="KeyValuePair{string, List{object}}"/> to extract a claim

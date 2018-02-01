@@ -23,7 +23,8 @@ namespace TokenAuth.Controllers
                 {
                     new Claim("CustomerId", Guid.NewGuid().ToString()),
                     new Claim("username", "totallyValidUserBro"),
-                    new Claim("ReportViolationEmail", "yolo@nolo.com")
+                    new Claim("ReportViolationEmail", "yolo@nolo.com"),
+                    new Claim("superSecretId", TokenManager.SymmetricallyEncryptString("whooaaaaaaaaaaaa"))
                 });
                 
             }
@@ -31,9 +32,10 @@ namespace TokenAuth.Controllers
         }
 
         [HttpPost("validate")]
-        public bool Validate([FromHeader] string Authorization)
+        public bool Validate([FromHeader] string authorization)
         {
-            var validationResult = TokenManager.ValidateJwt(Authorization, TokenManager.DefaultValidationParameters);
+            authorization = authorization.Replace("Bearer ", "");
+            var validationResult = TokenManager.ValidateJwt(authorization, TokenManager.DefaultValidationParameters);
             return validationResult.Key != null && validationResult.Value != null;
         }
     }

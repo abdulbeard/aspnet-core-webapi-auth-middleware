@@ -1,4 +1,4 @@
-﻿namespace MiddlewareAuth.Config.Claims
+﻿namespace MisturTee.Config.Claims
 {
     public class ClaimValidationConfig
     {

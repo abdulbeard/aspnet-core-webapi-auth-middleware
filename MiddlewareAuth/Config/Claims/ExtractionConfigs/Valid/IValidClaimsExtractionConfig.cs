@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid
+namespace MisturTee.Config.Claims.ExtractionConfigs.Valid
 {
 
     public interface IValidClaimsExtractionConfig

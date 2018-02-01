@@ -3,10 +3,10 @@ using System.Dynamic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
-using MiddlewareAuth.Utils;
+using MisturTee.Config.Claims.ExtractionConfigs.Valid;
+using MisturTee.Utils;
 
-namespace MiddlewareAuth.Config.Claims
+namespace MisturTee.Config.Claims
 {
     public class RouteClaimsConfig
     {

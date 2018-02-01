@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using MiddlewareAuth.Config.Claims;
+using MisturTee.Config.Claims;
 using Newtonsoft.Json;
 
-namespace MiddlewareAuth.Utils
+namespace MisturTee.Utils
 {
     internal class ResponseUtils
     {
@@ -20,7 +20,7 @@ namespace MiddlewareAuth.Utils
                 dynamicMissingClaimsResponseResponse.InvalidClaims =
                     validationResult.InvalidClaims.Select(x => new
                     {
-                        ClaimName = x.ClaimName,
+                        x.ClaimName,
                         Value = x.ActualValue
                     });
                 badRequestResponse.Response = dynamicMissingClaimsResponseResponse;

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MiddlewareAuth.Config;
-using MiddlewareAuth.Config.Routing;
-using MiddlewareAuth.Utils;
+using MisturTee.Config;
+using MisturTee.Config.Routing;
+using MisturTee.Utils;
 
-namespace MiddlewareAuth.Repositories
+namespace MisturTee.Repositories
 {
     internal class RoutesRepository
     {

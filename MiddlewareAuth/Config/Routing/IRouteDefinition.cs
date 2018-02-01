@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MiddlewareAuth.Config.Routing
+namespace MisturTee.Config.Routing
 {
     public interface IRouteDefinitions
     {

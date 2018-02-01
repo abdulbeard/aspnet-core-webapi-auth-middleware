@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using MiddlewareAuth.Config.Routing;
-using MiddlewareAuth.Utils;
+using MisturTee.Config.Routing;
+using MisturTee.Utils;
 
-namespace MiddlewareAuth.Middleware
+namespace MisturTee.Middleware
 {
     public class CustomClaimsValidationMiddleware
     {

@@ -1,15 +1,14 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
-using static MiddlewareAuth.Config.Claims.ExtractionConfigs.JsonPathClaimExtractionConfig;
 
-namespace MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid
+namespace MisturTee.Config.Claims.ExtractionConfigs.Valid
 {
     /// <summary>
     /// Validated version of <see cref="JsonPathClaimExtractionConfig"/> used to actually extract the claim
     /// </summary>
     public class ValidJsonPathClaimExtractionConfig : IValidClaimsExtractionConfig
     {
-        private readonly ExtractValueByJsonPathAsync _extract;
+        private readonly JsonPathClaimExtractionConfig.ExtractValueByJsonPathAsync _extract;
         private readonly string _path;
         private readonly string _claimName;
 
@@ -17,10 +16,10 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid
         /// creates a new instance
         /// </summary>
         /// <param name="path">jsonPath</param>
-        /// <param name="jsonPathExtraction"><see cref="ExtractValueByJsonPathAsync"/></param>
+        /// <param name="jsonPathExtraction"><see cref="JsonPathClaimExtractionConfig.ExtractValueByJsonPathAsync"/></param>
         /// <param name="claimName">name of the claim to extract</param>
         /// <param name="location"><see cref="ClaimLocation"/> location of the claim value</param>
-        public ValidJsonPathClaimExtractionConfig(string path, ExtractValueByJsonPathAsync jsonPathExtraction, string claimName, ClaimLocation location)
+        public ValidJsonPathClaimExtractionConfig(string path, JsonPathClaimExtractionConfig.ExtractValueByJsonPathAsync jsonPathExtraction, string claimName, ClaimLocation location)
         {
             _path = path;
             _extract = jsonPathExtraction;

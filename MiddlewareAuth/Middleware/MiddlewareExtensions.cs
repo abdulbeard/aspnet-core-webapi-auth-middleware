@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
-using System.Collections.Generic;
-using MiddlewareAuth.Config.Routing;
-using MiddlewareAuth.Config;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MiddlewareAuth.Repositories;
+using Microsoft.AspNetCore.Builder;
+using MisturTee.Config;
+using MisturTee.Config.Routing;
+using MisturTee.Repositories;
 
-namespace MiddlewareAuth.Middleware
+namespace MisturTee.Middleware
 {
     public static class MiddlewareExtensions
     {

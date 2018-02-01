@@ -1,18 +1,18 @@
-﻿using MiddlewareAuth.Config.Routing;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
-using MiddlewareAuth.Config.Claims;
-using MiddlewareAuth.Config.Claims.ExtractionConfigs;
 using TokenAuth.Models;
-using MiddlewareAuth.Config;
 using System.Dynamic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Primitives;
 using System.IO;
-using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
+using MisturTee.Config;
+using MisturTee.Config.Claims;
+using MisturTee.Config.Claims.ExtractionConfigs;
+using MisturTee.Config.Claims.ExtractionConfigs.Valid;
+using MisturTee.Config.Routing;
 
 namespace TokenAuth.Routes
 {

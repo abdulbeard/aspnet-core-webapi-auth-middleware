@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MiddlewareAuth.Middleware;
-using MiddlewareAuth.Utils;
+using MisturTee.Config;
+using MisturTee.Middleware;
 using TokenAuth.Cache;
 using TokenAuth.Middleware;
 
@@ -24,7 +24,7 @@ namespace TokenAuth
         {
             services.AddMvc();
             services.AddMemoryCache();
-            services.AddSingleton(typeof(MiddlewareAuth.Config.ConfigurationManager), new MiddlewareAuth.Config.ConfigurationManager());
+            services.AddSingleton(typeof(ConfigurationManager), new ConfigurationManager());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

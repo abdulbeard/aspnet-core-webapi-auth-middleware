@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MiddlewareAuth\MiddlewareAuth.csproj" />
+    <ProjectReference Include="..\MiddlewareAuth\MisturTee.csproj" />
   </ItemGroup>
 
 </Project>

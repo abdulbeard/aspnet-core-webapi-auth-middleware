@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2003
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TokenAuth", "TokenAuth\TokenAuth.csproj", "{1141FE2C-921B-4575-A02B-82B54D5ABB69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiddlewareAuth", "MiddlewareAuth\MiddlewareAuth.csproj", "{C14AD67C-29FC-46A2-B7D8-622AED5C44D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MisturTee", "MiddlewareAuth\MisturTee.csproj", "{C14AD67C-29FC-46A2-B7D8-622AED5C44D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
+using MisturTee.Config.Claims.ExtractionConfigs.Valid;
 
-namespace MiddlewareAuth.Config.Claims.ExtractionConfigs
+namespace MisturTee.Config.Claims.ExtractionConfigs
 {
     /// <summary>
     /// Helps you extract a claim from an object of type <see cref="T"/>

@@ -1,16 +1,15 @@
 ﻿using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using static MiddlewareAuth.Config.Claims.ExtractionConfigs.RegexClaimExtractionConfig;
 
-namespace MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid
+namespace MisturTee.Config.Claims.ExtractionConfigs.Valid
 {
     /// <summary>
     /// Valid version of <see cref="RegexClaimExtractionConfig"/>
     /// </summary>
     public class ValidRegexClaimExtractionConfig : IValidClaimsExtractionConfig
     {
-        private ExtractValueByRegexAsync _extract;
+        private RegexClaimExtractionConfig.ExtractValueByRegexAsync _extract;
         private Regex _regex;
         private string _claimName;
 
@@ -21,7 +20,7 @@ namespace MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid
         /// <param name="regex"><see cref="Regex"/> used for pattern matching</param>
         /// <param name="claim">name of the claim</param>
         /// <param name="location"><see cref="ClaimLocation"/> location of the claim</param>
-        public ValidRegexClaimExtractionConfig(ExtractValueByRegexAsync func, Regex regex, string claim, ClaimLocation location)
+        public ValidRegexClaimExtractionConfig(RegexClaimExtractionConfig.ExtractValueByRegexAsync func, Regex regex, string claim, ClaimLocation location)
         {
             _extract = func;
             _regex = regex;

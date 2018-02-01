@@ -8,6 +8,7 @@ namespace TokenAuth.Models
         public Alignment Alignment { get; set; }
         public AltruisticAptitude AltruisticAptitude { get; set; }
         public string ReportViolationEmail { get; set; }
+        public string SuperSecretId { get; set; }
     }
 
     public class AltruisticAptitude

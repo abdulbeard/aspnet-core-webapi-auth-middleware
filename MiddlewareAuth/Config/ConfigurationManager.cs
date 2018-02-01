@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace MiddlewareAuth.Config
+namespace MisturTee.Config
 {
     public class ConfigurationManager
     {
@@ -12,12 +12,13 @@ namespace MiddlewareAuth.Config
             BuildAppsettings();
         }
         private IConfigurationRoot _configuration;
+
         public T Appsettings<T>(string appsettingsPath)
         {
             try
             {
                 var value = _configuration[appsettingsPath];
-                return (T)Convert.ChangeType(value, typeof(T));
+                return value == null ? default(T) : (T) Convert.ChangeType(value, typeof(T));
             }
             catch (Exception)
             {

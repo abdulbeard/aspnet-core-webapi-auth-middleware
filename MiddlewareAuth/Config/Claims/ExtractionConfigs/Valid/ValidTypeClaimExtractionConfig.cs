@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
-namespace MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid
+namespace MisturTee.Config.Claims.ExtractionConfigs.Valid
 {
     public class ValidTypeClaimExtractionConfig<T> : IValidClaimsExtractionConfig
     {
