@@ -58,7 +58,7 @@ namespace TokenAuth.Routes
                             new RegexClaimExtractionConfig("hookaRegex", ClaimLocation.Uri).ConfigureExtraction(ExtractionFunctions.RegexFunc,
                                 new System.Text.RegularExpressions.Regex("/values/moralvalues/ca413986-f096-11e7-8c3f-9a214cf093ae/(.*)")).Build()
                         },
-                        ValidationConfig = new List<ClaimValidationConfig>()
+                        ValidationConfigs = new List<ClaimValidationConfig>()
                         {
                             new ClaimValidationConfig()
                             {

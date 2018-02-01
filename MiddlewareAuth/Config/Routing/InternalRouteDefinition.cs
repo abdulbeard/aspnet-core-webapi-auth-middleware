@@ -2,7 +2,6 @@
 using System;
 using System.Net.Http;
 using MiddlewareAuth.Config.Claims;
-using Newtonsoft.Json;
 
 namespace MiddlewareAuth.Config.Routing
 {

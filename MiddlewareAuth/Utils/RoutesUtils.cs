@@ -11,15 +11,21 @@ namespace MiddlewareAuth.Utils
 {
     public static class RoutesUtils
     {
-        internal static async Task<KeyValuePair<RouteDefinition, RouteValueDictionary>> MatchRouteAsync(HttpContext context)
+        internal static async Task<KeyValuePair<RouteDefinition, RouteValueDictionary>> MatchRouteAsync(
+            HttpContext context)
         {
-            foreach (var route in (await RoutesRepository.GetRoutesAsync().ConfigureAwait(false))[context.Request.Method])
+            var routes = (await RoutesRepository.GetRoutesAsync().ConfigureAwait(false));
+            if (routes.ContainsKey(context.Request.Method))
             {
-                var templateMatcher = new TemplateMatcher(route.RouteTemplate, RoutesUtils.GetDefaults(route.RouteTemplate));
-                var routeValues = RoutesUtils.GetDefaults(route.RouteTemplate);
-                if (templateMatcher.TryMatch(context.Request.Path, routeValues))
+                foreach (var route in routes[context.Request.Method])
                 {
-                    return new KeyValuePair<RouteDefinition, RouteValueDictionary>(route.ToRouteDefinition(), routeValues);
+                    var templateMatcher = new TemplateMatcher(route.RouteTemplate, GetDefaults(route.RouteTemplate));
+                    var routeValues = GetDefaults(route.RouteTemplate);
+                    if (templateMatcher.TryMatch(context.Request.Path, routeValues))
+                    {
+                        return new KeyValuePair<RouteDefinition, RouteValueDictionary>(route.ToRouteDefinition(),
+                            routeValues);
+                    }
                 }
             }
             return new KeyValuePair<RouteDefinition, RouteValueDictionary>(null, null);

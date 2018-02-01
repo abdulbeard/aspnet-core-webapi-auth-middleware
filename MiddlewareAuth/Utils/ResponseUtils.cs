@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using MiddlewareAuth.Config.Claims;
@@ -19,7 +16,13 @@ namespace MiddlewareAuth.Utils
                 badRequestResponse.Headers.ToList().ForEach(x => context.Response.Headers.AppendList(x.Key, x.Value));
                 context.Response.StatusCode = (int) badRequestResponse.HttpStatusCode;
                 dynamic dynamicMissingClaimsResponseResponse = badRequestResponse.Response;
-                dynamicMissingClaimsResponseResponse.Data = validationResult.MissingClaims;
+                dynamicMissingClaimsResponseResponse.MissingClaims = validationResult.MissingClaims;
+                dynamicMissingClaimsResponseResponse.InvalidClaims =
+                    validationResult.InvalidClaims.Select(x => new
+                    {
+                        ClaimName = x.ClaimName,
+                        Value = x.ActualValue
+                    });
                 badRequestResponse.Response = dynamicMissingClaimsResponseResponse;
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(badRequestResponse.Response))
                     .ConfigureAwait(false);

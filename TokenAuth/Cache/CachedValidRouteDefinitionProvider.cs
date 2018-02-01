@@ -58,14 +58,21 @@ namespace TokenAuth.Cache
                         },
                         ExtractionConfigs = new List<IValidClaimsExtractionConfig>
                         {
-                            new SerializableClaimsExtractionConfig("AltruisticAlignment").Build()
+                            new SerializableClaimsExtractionConfig("ReportViolationEmail")
+                            {
+                                ClaimLocation = ClaimLocation.Body,
+                                ExtractionStrategem = SerializableExtractionType.JsonPath,
+                                Path = "$.ReportViolationEmail"
+                            }.Build()
                         },
-                        ValidationConfig = new List<ClaimValidationConfig>
+                        ValidationConfigs = new List<ClaimValidationConfig>
                         {
                             new ClaimValidationConfig()
                             {
-                                ClaimName = "AltruisticAlignment",
-                                IsRequired = true
+                                ClaimName = "ReportViolationEmail",
+                                IsRequired = true,
+                                AllowNullOrEmpty = false,
+                                ValueMustBeExactMatch = true
                             }
                         }
                     }

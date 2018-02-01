@@ -15,13 +15,15 @@ namespace MiddlewareAuth.Utils
         internal static async Task<bool> ValidateClaimsAsync(RouteDefinition routeDef, HttpContext context,
             RouteValueDictionary routeValues)
         {
+            if (routeDef?.ClaimsConfig?.ValidationConfigs == null) return true;
             var claims = await ExtractionUtils.GetClaimsAsync(routeDef, context.Request, routeValues)
                 .ConfigureAwait(false);
             var expectedClaims = (IEnumerable<Claim>) context.Items["ExpectedClaims"] ?? Enumerable.Empty<Claim>();
-            var validationResult = Validate(routeDef.ClaimsConfig.ValidationConfig, claims, expectedClaims);
+            var validationResult = Validate(routeDef.ClaimsConfig.ValidationConfigs, claims, expectedClaims);
             if (!validationResult.Success)
             {
-                await ResponseUtils.CreateResponse(validationResult, context, routeDef.ClaimsConfig.BadRequestResponse)
+                await ResponseUtils
+                    .CreateResponse(validationResult, context, routeDef.ClaimsConfig.BadRequestResponse)
                     .ConfigureAwait(false);
                 return false;
             }
@@ -38,6 +40,11 @@ namespace MiddlewareAuth.Utils
             foreach (var config in validationConfig)
                 if (config.IsRequired)
                 {
+                    if (!extClaimsDict.ContainsKey(config.ClaimName))
+                    {
+                        result.MissingClaims.Add(config.ClaimName);
+                        continue;
+                    }
                     var extractedClaimValue = extClaimsDict[config.ClaimName];
                     if (!extClaimsDict.ContainsKey(config.ClaimName) ||
                         !config.AllowNullOrEmpty &&
@@ -53,6 +60,7 @@ namespace MiddlewareAuth.Utils
                     {
                         result.InvalidClaims.Add(new InvalidClaimResult
                         {
+                            ClaimName = config.ClaimName,
                             ActualValue = extractedClaimValue,
                             ExpectedValue = expectedClaimsDict[config.ClaimName]
                         });
@@ -77,6 +85,7 @@ namespace MiddlewareAuth.Utils
 
     public class InvalidClaimResult
     {
+        public string ClaimName { get; set; }
         public string ExpectedValue { get; set; }
         public string ActualValue { get; set; }
     }

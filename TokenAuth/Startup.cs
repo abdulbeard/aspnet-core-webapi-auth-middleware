@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MiddlewareAuth.Config.Routing;
 using MiddlewareAuth.Middleware;
+using MiddlewareAuth.Utils;
 using TokenAuth.Cache;
-using TokenAuth.Routes;
+using TokenAuth.Middleware;
 
 namespace TokenAuth
 {
@@ -35,8 +34,19 @@ namespace TokenAuth
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCustomClaimsValidationAsync(new List<IRouteDefinitions> { new ValuesRoutes() }).Wait();
-            app.UseCustomClaimsValidationAsync(new CachedValidRouteDefinitionProvider(memoryCache)).Wait();
+            app.UseMiddleware<JwtMiddleware>();
+            //app.UseCustomClaimsValidationAsync(new List<IRouteDefinitions> { new ValuesRoutes() }).Wait();
+            app.UseCustomClaimsValidationAsync(new CachedValidRouteDefinitionProvider(memoryCache), async (context) =>
+            {
+                var matchedRouteResult = await CustomClaimsValidationMiddleware.GetMatchingRoute(context).ConfigureAwait(false);
+                if (matchedRouteResult.Key != null)
+                {
+                    return await CustomClaimsValidationMiddleware
+                        .ValidateClaimsAsync(matchedRouteResult.Key, context, matchedRouteResult.Value)
+                        .ConfigureAwait(false);
+                }
+                return true;
+            }).Wait();
             app.UseMvc();
         }
     }

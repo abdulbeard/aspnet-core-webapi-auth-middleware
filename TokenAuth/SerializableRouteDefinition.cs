@@ -28,6 +28,7 @@ namespace TokenAuth
 
     public class SerializableRouteConfig : RouteDefinition
     {
+        private SerializableRouteClaimsConfig _serializableRouteClaimsConfig;
         public string HttpMethod;
         public override HttpMethod Method()
         {
@@ -39,12 +40,30 @@ namespace TokenAuth
             return typeof(string);
         }
 
-        public new SerializableRouteClaimsConfig ClaimsConfig { get; set; }
+        public new SerializableRouteClaimsConfig ClaimsConfig
+        {
+            get => _serializableRouteClaimsConfig;
+            set
+            {
+                this._serializableRouteClaimsConfig = value;
+                base.ClaimsConfig = value;
+            }
+        }
     }
 
     public class SerializableRouteClaimsConfig : RouteClaimsConfig
     {
-        public new IList<IValidClaimsExtractionConfig> ExtractionConfigs { get; set; }
+        private IList<IValidClaimsExtractionConfig> _validClaimsExtractionConfigs;
+
+        public new IList<IValidClaimsExtractionConfig> ExtractionConfigs
+        {
+            get => _validClaimsExtractionConfigs;
+            set
+            {
+                _validClaimsExtractionConfigs = value;
+                base.ExtractionConfigs = value;
+            }
+        }
     }
 
     public class SerializableClaimsExtractionConfig : ClaimsExtractionConfig
@@ -81,6 +100,10 @@ namespace TokenAuth
 
         public override IValidClaimsExtractionConfig Build()
         {
+            if (!IsValid())
+            {
+                throw new ArgumentException($"This instance of {nameof(SerializableClaimsExtractionConfig)} is invalid");
+            }
             switch (ExtractionStrategem)
             {
                 case SerializableExtractionType.JsonPath:
@@ -97,11 +120,39 @@ namespace TokenAuth
             }
         }
 
-        public bool IsValid()
+        private bool IsValid()
         {
-            return ExtractionType != ExtractionType.None &&
-                   !(string.IsNullOrEmpty(Path) && string.IsNullOrEmpty(Regex) && string.IsNullOrEmpty(KeyName)) &&
-                   (!string.IsNullOrEmpty(Regex) && ParseRegex(Regex)) && ClaimLocation != ClaimLocation.None && !string.IsNullOrEmpty(ClaimName);
+            if (ExtractionType == ExtractionType.None)
+            {
+                return false;
+            }
+            if (string.IsNullOrEmpty(Path) && string.IsNullOrEmpty(Regex) && string.IsNullOrEmpty(KeyName))
+            {
+                return false;
+            }
+            if (ClaimLocation == ClaimLocation.None)
+            {
+                return false;
+            }
+            if (!string.IsNullOrEmpty(KeyName))
+            {
+                ExtractionStrategem = SerializableExtractionType.KeyValue;
+                return true;
+            }
+            if (!string.IsNullOrEmpty(Path))
+            {
+                ExtractionStrategem = SerializableExtractionType.JsonPath;
+                return true;
+            }
+            if (!string.IsNullOrEmpty(Regex))
+            {
+                if (!ParseRegex(Regex) || ClaimLocation == ClaimLocation.Headers)
+                {
+                    return false;
+                }
+                ExtractionStrategem = SerializableExtractionType.RegEx;
+            }
+            return true;
         }
 
         private bool ParseRegex(string regexString)

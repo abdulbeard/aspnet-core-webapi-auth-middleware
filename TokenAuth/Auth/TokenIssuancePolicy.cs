@@ -1,10 +1,9 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
 using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
-namespace MiddlewareAuth.Auth
+namespace TokenAuth.Auth
 {
-
     public class TokenIssuancePolicy
     {
         public static TokenIssuancePolicy Default = new TokenIssuancePolicy();

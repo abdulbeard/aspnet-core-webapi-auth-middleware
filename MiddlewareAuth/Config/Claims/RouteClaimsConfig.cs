@@ -15,7 +15,7 @@ namespace MiddlewareAuth.Config.Claims
             BadRequestResponse = new BadRequestResponse();
         }
         public IList<IValidClaimsExtractionConfig> ExtractionConfigs { get; set; }
-        public IList<ClaimValidationConfig> ValidationConfig { get; set; }
+        public IList<ClaimValidationConfig> ValidationConfigs { get; set; }
         public BadRequestResponse BadRequestResponse { get; set; }
     }
 

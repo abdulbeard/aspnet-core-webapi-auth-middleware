@@ -1,14 +1,23 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
 using MiddlewareAuth.Extensions;
 
-namespace MiddlewareAuth.Auth
+namespace TokenAuth.Auth
 {
     public class TokenManager
     {
+        public static readonly TokenValidationParameters DefaultValidationParameters = new TokenValidationParameters
+        {
+            IssuerSigningKey = new TokenIssuancePolicy().SecurityKey,
+            ValidIssuer = AppDomain.CurrentDomain.FriendlyName,
+            ValidateIssuer = true,
+            ValidateLifetime = true,
+            ValidateAudience = false
+        };
+
         public static string CreateJwt(TokenIssuancePolicy policy, IList<Claim> claims)
         {
             var header = new JwtHeader(new SigningCredentials(

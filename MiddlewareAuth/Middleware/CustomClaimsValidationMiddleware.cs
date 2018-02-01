@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
+using MiddlewareAuth.Config.Routing;
 using MiddlewareAuth.Utils;
 
 namespace MiddlewareAuth.Middleware
@@ -7,7 +10,7 @@ namespace MiddlewareAuth.Middleware
     public class CustomClaimsValidationMiddleware
     {
         private readonly RequestDelegate _next;
-        private static ClaimValidatorDelegate validationDelegate;
+        private static ClaimValidatorDelegate _validationDelegate;
 
         public CustomClaimsValidationMiddleware(RequestDelegate next)
         {
@@ -16,14 +19,25 @@ namespace MiddlewareAuth.Middleware
 
         internal static void RegisterValidationDelegate(ClaimValidatorDelegate func)
         {
-            validationDelegate = func;
+            _validationDelegate = func;
+        }
+
+        public static async Task<KeyValuePair<RouteDefinition, RouteValueDictionary>> GetMatchingRoute(HttpContext context)
+        {
+            return await RoutesUtils.MatchRouteAsync(context).ConfigureAwait(false);
+        }
+
+        public static async Task<bool> ValidateClaimsAsync(RouteDefinition routeDef, HttpContext context,
+            RouteValueDictionary routeValues)
+        {
+            return await ValidationUtils.ValidateClaimsAsync(routeDef, context, routeValues).ConfigureAwait(false);
         }
 
         public async Task Invoke(HttpContext context)
         {
-            if (validationDelegate != null)
+            if (_validationDelegate != null)
             {
-                if (!await validationDelegate(context).ConfigureAwait(false))
+                if (!await _validationDelegate(context).ConfigureAwait(false))
                 {
                     return;
                 }
@@ -49,7 +63,10 @@ namespace MiddlewareAuth.Middleware
         /// Delegate that takes in <see cref="HttpContext"/> and evaluates if all is good with the request
         /// </summary>
         /// <param name="context">current http context</param>
-        /// <returns>true if claims are valid and all is good with the request</returns>
+        /// <returns>
+        /// true if claims are valid and all is good with the request. 
+        /// false if errors were found with the request, and the request will be cut short and the response returned
+        /// </returns>
         public delegate Task<bool> ClaimValidatorDelegate(HttpContext context);
     }
 }

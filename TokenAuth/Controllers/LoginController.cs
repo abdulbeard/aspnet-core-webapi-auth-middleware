@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using MiddlewareAuth.Auth;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using TokenAuth.Auth;
 
 namespace TokenAuth.Controllers
 {
@@ -23,7 +22,8 @@ namespace TokenAuth.Controllers
                 return TokenManager.CreateJwt(new TokenIssuancePolicy(), new List<Claim>
                 {
                     new Claim("CustomerId", Guid.NewGuid().ToString()),
-                    new Claim("username", "totallyValidUserBro")
+                    new Claim("username", "totallyValidUserBro"),
+                    new Claim("ReportViolationEmail", "yolo@nolo.com")
                 });
                 
             }
@@ -31,17 +31,9 @@ namespace TokenAuth.Controllers
         }
 
         [HttpPost("validate")]
-        public bool Validate([FromHeader] string token)
+        public bool Validate([FromHeader] string Authorization)
         {
-            var policy = new TokenIssuancePolicy();
-            var validationResult = TokenManager.ValidateJwt(token, new TokenValidationParameters
-            {
-                IssuerSigningKey = policy.SecurityKey,
-                ValidIssuer = AppDomain.CurrentDomain.FriendlyName,
-                ValidateIssuer = true,
-                ValidateLifetime = true,
-                ValidateAudience = false
-            });
+            var validationResult = TokenManager.ValidateJwt(Authorization, TokenManager.DefaultValidationParameters);
             return validationResult.Key != null && validationResult.Value != null;
         }
     }
