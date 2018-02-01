@@ -50,7 +50,7 @@ namespace TokenAuth.Cache
                     RouteTemplate = "values/moralValues/{subscriberId}/{kiwiChant}",
                     ClaimsConfig = new SerializableRouteClaimsConfig
                     {
-                        MissingClaimsResponse =  new MissingClaimsResponse
+                        BadRequestResponse =  new BadRequestResponse
                         {
                             HttpStatusCode = System.Net.HttpStatusCode.Forbidden,
                             Response =  response,

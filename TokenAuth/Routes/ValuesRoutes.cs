@@ -72,11 +72,11 @@ namespace TokenAuth.Routes
                                 AllowNullOrEmpty = false
                             }
                         },
-                        MissingClaimsResponse = new MissingClaimsResponse
+                        BadRequestResponse = new BadRequestResponse
                         {
                             HttpStatusCode = System.Net.HttpStatusCode.Forbidden,
                             Response = GetMissingClaimsResponse(),
-                            MissingClaimsResponseOverride = (missingClaims) =>
+                            BadRequestResponseOverride = (missingClaims, expectedClaims) =>
                             {
                                 return Task.FromResult(GetSampleResponse());
                             }

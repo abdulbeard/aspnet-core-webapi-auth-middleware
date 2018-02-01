@@ -1,13 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Template;
 using MiddlewareAuth.Config.Routing;
+using MiddlewareAuth.Repositories;
 
 namespace MiddlewareAuth.Utils
 {
     public static class RoutesUtils
     {
+        internal static async Task<KeyValuePair<RouteDefinition, RouteValueDictionary>> MatchRouteAsync(HttpContext context)
+        {
+            foreach (var route in (await RoutesRepository.GetRoutesAsync().ConfigureAwait(false))[context.Request.Method])
+            {
+                var templateMatcher = new TemplateMatcher(route.RouteTemplate, RoutesUtils.GetDefaults(route.RouteTemplate));
+                var routeValues = RoutesUtils.GetDefaults(route.RouteTemplate);
+                if (templateMatcher.TryMatch(context.Request.Path, routeValues))
+                {
+                    return new KeyValuePair<RouteDefinition, RouteValueDictionary>(route.ToRouteDefinition(), routeValues);
+                }
+            }
+            return new KeyValuePair<RouteDefinition, RouteValueDictionary>(null, null);
+        }
+
         public static RouteValueDictionary GetDefaults(RouteTemplate parsedTemplate)
         {
             var result = new RouteValueDictionary();

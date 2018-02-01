@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using MiddlewareAuth.Config.Claims.ExtractionConfigs.Valid;
+using MiddlewareAuth.Utils;
 
 namespace MiddlewareAuth.Config.Claims
 {
@@ -11,16 +12,16 @@ namespace MiddlewareAuth.Config.Claims
     {
         public RouteClaimsConfig()
         {
-            MissingClaimsResponse = new MissingClaimsResponse();
+            BadRequestResponse = new BadRequestResponse();
         }
         public IList<IValidClaimsExtractionConfig> ExtractionConfigs { get; set; }
         public IList<ClaimValidationConfig> ValidationConfig { get; set; }
-        public MissingClaimsResponse MissingClaimsResponse { get; set; }
+        public BadRequestResponse BadRequestResponse { get; set; }
     }
 
-    public class MissingClaimsResponse
+    public class BadRequestResponse
     {
-        public MissingClaimsResponse()
+        public BadRequestResponse()
         {
             HttpStatusCode = HttpStatusCode.Forbidden;
             dynamic response = new ExpandoObject();
@@ -31,13 +32,13 @@ namespace MiddlewareAuth.Config.Claims
         public IHeaderDictionary Headers { get; set; }
         public HttpStatusCode HttpStatusCode { get; set; }
         public ExpandoObject Response { get; set; }
-        public MissingClaimsResponseOverride MissingClaimsResponseOverride { get; set; }
+        public BadRequestResponseOverride BadRequestResponseOverride { get; set; }
     }
 
     /// <summary>
-    /// Function that returns <see cref="HttpResponse"/> which overrides the response defined by <see cref="MissingClaimsResponse"/>
+    /// Function that returns <see cref="HttpResponse"/> which overrides the response defined by <see cref="BadRequestResponse"/>
     /// </summary>
     /// <param name="missingClaims">list of missing claims</param>
     /// <returns></returns>
-    public delegate Task<HttpResponse> MissingClaimsResponseOverride(IEnumerable<string> missingClaims);
+    public delegate Task<HttpResponse> BadRequestResponseOverride(IEnumerable<string> missingClaims, IEnumerable<InvalidClaimResult> invalidClaims);
 }

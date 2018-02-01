@@ -6,11 +6,8 @@ using Newtonsoft.Json;
 
 namespace MiddlewareAuth.Config.Routing
 {
-    [JsonObject]
     internal class InternalRouteDefinition
     {
-        [JsonConstructor]
-        internal InternalRouteDefinition() { }
         internal InternalRouteDefinition(RouteDefinition routeDef)
         {
             Method = routeDef.Method();
@@ -18,13 +15,70 @@ namespace MiddlewareAuth.Config.Routing
             RequestBody = routeDef.RequestBody();
             ClaimsConfig = routeDef.ClaimsConfig;
         }
-        [JsonProperty]
         internal HttpMethod Method { get; set; }
-        [JsonProperty]
         internal RouteTemplate RouteTemplate { get; set; }
-        [JsonProperty]
         internal Type RequestBody { get; set; }
-        [JsonProperty]
         internal RouteClaimsConfig ClaimsConfig { get; set; }
+
+        internal RouteDefinition ToRouteDefinition()
+        {
+            if (Method == HttpMethod.Get)
+            {
+                return new GetRouteDefinition
+                {
+                    ClaimsConfig = ClaimsConfig,
+                    RouteTemplate = RouteTemplate.TemplateText
+                };
+            }
+            if (Method == HttpMethod.Delete)
+            {
+                return new DeleteRouteDefinition(RequestBody)
+                {
+                    ClaimsConfig = ClaimsConfig,
+                    RouteTemplate = RouteTemplate.TemplateText
+                };
+            }
+            if (Method == HttpMethod.Head)
+            {
+                return new HeadRouteDefinition
+                {
+                    ClaimsConfig = ClaimsConfig,
+                    RouteTemplate = RouteTemplate.TemplateText
+                };
+            }
+            if (Method == HttpMethod.Options)
+            {
+                return new OptionsRouteDefinition
+                {
+                    ClaimsConfig = ClaimsConfig,
+                    RouteTemplate = RouteTemplate.TemplateText
+                };
+            }
+            if (Method == HttpMethod.Post)
+            {
+                return new PostRouteDefinition(RequestBody)
+                {
+                    ClaimsConfig = ClaimsConfig,
+                    RouteTemplate = RouteTemplate.TemplateText
+                };
+            }
+            if (Method == HttpMethod.Put)
+            {
+                return new PutRouteDefinition(RequestBody)
+                {
+                    ClaimsConfig = ClaimsConfig,
+                    RouteTemplate = RouteTemplate.TemplateText
+                };
+            }
+            if (Method == HttpMethod.Trace)
+            {
+                return new TraceRouteDefinition
+                {
+                    ClaimsConfig = ClaimsConfig,
+                    RouteTemplate = RouteTemplate.TemplateText
+                };
+            }
+            return null;
+        }
     }
 }
