@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using MisturTee.Extensions;
 
@@ -21,25 +24,30 @@ namespace TokenAuth.Auth
             ValidIssuer = AppDomain.CurrentDomain.FriendlyName,
             ValidateIssuer = true,
             ValidateLifetime = true,
-            ValidateAudience = false
+            ValidateAudience = false,
+            RequireSignedTokens = false,
+            TokenDecryptionKey = new EncryptingCredentials(new TokenIssuancePolicy().SecurityKey,
+                JwtConstants.DirectKeyUseAlg,
+                SecurityAlgorithms.Aes256CbcHmacSha512).Key
         };
 
         public static string CreateJwt(TokenIssuancePolicy policy, IList<Claim> claims)
         {
-            //var header = new JwtHeader(new SigningCredentials(
-            //    policy.SecurityKey,
-            //    SecurityAlgorithms.HmacSha512Signature));
-            var header = new JwtHeader(new EncryptingCredentials(policy.SecurityKey, JwtConstants.DirectKeyUseAlg,
-                SecurityAlgorithms.Aes256CbcHmacSha512));
+            policy.Expiration = DateTime.Now.AddYears(2) - DateTime.Now;
+            var claimsss = GetPayloadClaims(claims, policy);
+            //return JwtCeption(policy, claims);
+            return JustJwe(policy, claims);
+            var header = new JwtHeader(new SigningCredentials(
+                policy.SecurityKey,
+                SecurityAlgorithms.HmacSha512Signature));
             var payload = new JwtPayload(GetPayloadClaims(claims, policy));
             var token = new JwtSecurityToken(header, payload);
-            //token.EncryptingCredentials = new EncryptingCredentials(policy.SecurityKey, JwtConstants.DirectKeyUseAlg,
-            //    SecurityAlgorithms.Aes256CbcHmacSha512);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         public static TokenValidationResult ValidateJwt(string tokenString, TokenValidationParameters validationParameters)
         {
+            var tokenParts = tokenString.Split(new char[] { '.' }, 5 + 1);
             try
             {
                 var claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(tokenString, validationParameters, out var validatedToken);
@@ -56,6 +64,85 @@ namespace TokenAuth.Auth
                     Successful = false,
                     FailureReason = ex.Message
                 };
+            }
+        }
+
+        private static string JustJwe(TokenIssuancePolicy policy, IList<Claim> claims)
+        {
+            var header = new JwtHeader(new EncryptingCredentials(policy.SecurityKey, JwtConstants.DirectKeyUseAlg,
+                SecurityAlgorithms.Aes256CbcHmacSha512));
+            var payload = new JwtPayload(GetPayloadClaims(claims, policy));
+            var token = new JwtSecurityToken(header, payload);
+            return new JwtSecurityTokenHandler().WriteToken(token);
+
+        }
+
+        private static string JwtCeption(TokenIssuancePolicy policy, IList<Claim> claims)
+        {
+            var signingCredentials = new SigningCredentials(
+                policy.SecurityKey,
+                SecurityAlgorithms.HmacSha512Signature);
+            var innerJwtHeader = new JwtHeader(signingCredentials);
+            var innerJwtPayload = new JwtPayload(GetPayloadClaims(claims, policy));
+            var rawHeader = innerJwtHeader.Base64UrlEncode();
+            var rawPayload = innerJwtPayload.Base64UrlEncode();
+            var encodedSignature = signingCredentials == null ? string.Empty : CreateEncodedSignature(string.Concat(rawHeader, ".", rawPayload), signingCredentials);
+            var innerJwt = new JwtSecurityToken(innerJwtHeader, innerJwtPayload, rawHeader, rawPayload, rawSignature:encodedSignature );
+            //var header = new JwtHeader(new SigningCredentials(
+            //    policy.SecurityKey,
+            //    SecurityAlgorithms.HmacSha512Signature));
+            var encryptingCredentials = new EncryptingCredentials(policy.SecurityKey, JwtConstants.DirectKeyUseAlg,
+                SecurityAlgorithms.Aes256CbcHmacSha512);
+            var header = new JwtHeader(encryptingCredentials);
+            var payload = new JwtPayload(GetPayloadClaims(claims, policy));
+
+            var cryptoProviderFactory = encryptingCredentials.CryptoProviderFactory ??
+                                     encryptingCredentials.Key.CryptoProviderFactory;
+
+            var encryptionProvider = cryptoProviderFactory.CreateAuthenticatedEncryptionProvider(encryptingCredentials.Key, encryptingCredentials.Enc);
+
+            var encryptionResult = encryptionProvider.Encrypt(Encoding.UTF8.GetBytes(innerJwt.RawData), Encoding.ASCII.GetBytes(header.Base64UrlEncode()));
+
+
+
+            var token = new JwtSecurityToken(
+                header,
+                innerJwt,
+                header.Base64UrlEncode(),
+                string.Empty,
+                Base64UrlEncoder.Encode(encryptionResult.IV),
+                Base64UrlEncoder.Encode(encryptionResult.Ciphertext),
+                Base64UrlEncoder.Encode(encryptionResult.AuthenticationTag));
+            //token.EncryptingCredentials = new EncryptingCredentials(policy.SecurityKey, JwtConstants.DirectKeyUseAlg,
+            //    SecurityAlgorithms.Aes256CbcHmacSha512);
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        internal static string CreateEncodedSignature(string input, SigningCredentials signingCredentials)
+        {
+            if (input == null)
+                throw LogHelper.LogArgumentNullException(nameof(input));
+
+            if (signingCredentials == null)
+                throw LogHelper.LogArgumentNullException(nameof(signingCredentials));
+
+            var cryptoProviderFactory =
+                signingCredentials.CryptoProviderFactory ?? signingCredentials.Key.CryptoProviderFactory;
+            var signatureProvider =
+                cryptoProviderFactory.CreateForSigning(signingCredentials.Key, signingCredentials.Algorithm);
+            if (signatureProvider == null)
+                throw LogHelper.LogExceptionMessage(new InvalidOperationException(
+                    String.Format(CultureInfo.InvariantCulture, "IDX10636",
+                        (signingCredentials.Key == null ? "Null" : signingCredentials.Key.ToString()),
+                        (signingCredentials.Algorithm ?? "Null"))));
+
+            try
+            {
+                return Base64UrlEncoder.Encode(signatureProvider.Sign(Encoding.UTF8.GetBytes(input)));
+            }
+            finally
+            {
+                cryptoProviderFactory.ReleaseSignatureProvider(signatureProvider);
             }
         }
 
