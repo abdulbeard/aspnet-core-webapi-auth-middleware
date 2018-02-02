@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
@@ -25,24 +26,36 @@ namespace TokenAuth.Auth
 
         public static string CreateJwt(TokenIssuancePolicy policy, IList<Claim> claims)
         {
-            var header = new JwtHeader(new SigningCredentials(
-                policy.SecurityKey,
-                SecurityAlgorithms.HmacSha512Signature));
+            //var header = new JwtHeader(new SigningCredentials(
+            //    policy.SecurityKey,
+            //    SecurityAlgorithms.HmacSha512Signature));
+            var header = new JwtHeader(new EncryptingCredentials(policy.SecurityKey, JwtConstants.DirectKeyUseAlg,
+                SecurityAlgorithms.Aes256CbcHmacSha512));
             var payload = new JwtPayload(GetPayloadClaims(claims, policy));
             var token = new JwtSecurityToken(header, payload);
+            //token.EncryptingCredentials = new EncryptingCredentials(policy.SecurityKey, JwtConstants.DirectKeyUseAlg,
+            //    SecurityAlgorithms.Aes256CbcHmacSha512);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public static KeyValuePair<ClaimsPrincipal, SecurityToken> ValidateJwt(string tokenString, TokenValidationParameters validationParameters)
+        public static TokenValidationResult ValidateJwt(string tokenString, TokenValidationParameters validationParameters)
         {
             try
             {
                 var claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(tokenString, validationParameters, out var validatedToken);
-                return new KeyValuePair<ClaimsPrincipal, SecurityToken>(claimsPrincipal, validatedToken);
+                return new TokenValidationResult{
+                    ClaimsPrincipal = claimsPrincipal,
+                    SecurityToken = validatedToken,
+                    Successful = true
+                };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new KeyValuePair<ClaimsPrincipal, SecurityToken>(null, null);
+                return new TokenValidationResult
+                {
+                    Successful = false,
+                    FailureReason = ex.Message
+                };
             }
         }
 
@@ -51,41 +64,44 @@ namespace TokenAuth.Auth
             {
                 // Check arguments.
                 if (plainText == null || plainText.Length <= 0)
-                    throw new ArgumentNullException("plainText");
+                    throw new ArgumentNullException(nameof(plainText));
                 if (Key.Length <= 0)
                     throw new ArgumentNullException(nameof(Key));
                 if (Iv.Length <= 0)
                     throw new ArgumentNullException(nameof(Iv));
-                byte[] encrypted;
+                var encrypted = new List<byte>();
                 // Create an Aes object
                 // with the specified key and IV.
                 using (var aesAlg = Aes.Create())
                 {
-                    aesAlg.Key = Convert.FromBase64String(Key);
-                    aesAlg.IV = Convert.FromBase64String(Iv);
-
-                    // Create a decrytor to perform the stream transform.
-                    var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
-
-                    // Create the streams used for encryption.
-                    using (var msEncrypt = new MemoryStream())
+                    if (aesAlg != null)
                     {
-                        using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                        {
-                            using (var swEncrypt = new StreamWriter(csEncrypt))
-                            {
+                        aesAlg.Key = Convert.FromBase64String(Key);
+                        aesAlg.IV = Convert.FromBase64String(Iv);
 
-                                //Write all data to the stream.
-                                swEncrypt.Write(plainText);
+                        // Create a decrytor to perform the stream transform.
+                        var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+                        // Create the streams used for encryption.
+                        using (var msEncrypt = new MemoryStream())
+                        {
+                            using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                            {
+                                using (var swEncrypt = new StreamWriter(csEncrypt))
+                                {
+
+                                    //Write all data to the stream.
+                                    swEncrypt.Write(plainText);
+                                }
+                                encrypted = msEncrypt.ToArray().ToList();
                             }
-                            encrypted = msEncrypt.ToArray();
                         }
                     }
                 }
 
 
                 // Return the encrypted bytes from the memory stream.
-                return Convert.ToBase64String(encrypted);
+                return Convert.ToBase64String(encrypted.ToArray());
 
             }
         }
@@ -95,7 +111,7 @@ namespace TokenAuth.Auth
             {
                 // Check arguments.
                 if (cipherText == null || cipherText.Length <= 0)
-                    throw new ArgumentNullException("cipherText");
+                    throw new ArgumentNullException(nameof(cipherText));
                 if (Key.Length <= 0)
                     throw new ArgumentNullException(nameof(Key));
                 if (Iv.Length <= 0)
@@ -103,29 +119,32 @@ namespace TokenAuth.Auth
 
                 // Declare the string used to hold
                 // the decrypted text.
-                string plaintext;
+                string plaintext = string.Empty;
 
                 // Create an Aes object
                 // with the specified key and IV.
                 using (var aesAlg = Aes.Create())
                 {
-                    aesAlg.Key = Convert.FromBase64String(Key);
-                    aesAlg.IV = Convert.FromBase64String(Iv);
-
-                    // Create a decrytor to perform the stream transform.
-                    var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-
-                    // Create the streams used for decryption.
-                    using (var msDecrypt = new MemoryStream(Convert.FromBase64String(cipherText)))
+                    if (aesAlg != null)
                     {
-                        using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                        {
-                            using (var srDecrypt = new StreamReader(csDecrypt))
-                            {
+                        aesAlg.Key = Convert.FromBase64String(Key);
+                        aesAlg.IV = Convert.FromBase64String(Iv);
 
-                                // Read the decrypted bytes from the decrypting stream
-                                // and place them in a string.
-                                plaintext = srDecrypt.ReadToEnd();
+                        // Create a decrytor to perform the stream transform.
+                        var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                        // Create the streams used for decryption.
+                        using (var msDecrypt = new MemoryStream(Convert.FromBase64String(cipherText)))
+                        {
+                            using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                            {
+                                using (var srDecrypt = new StreamReader(csDecrypt))
+                                {
+
+                                    // Read the decrypted bytes from the decrypting stream
+                                    // and place them in a string.
+                                    plaintext = srDecrypt.ReadToEnd();
+                                }
                             }
                         }
                     }
@@ -221,5 +240,13 @@ namespace TokenAuth.Auth
         {
             return new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.TotalSecondsSinceEpoch().ToString());
         }
+    }
+
+    public class TokenValidationResult
+    {
+        public ClaimsPrincipal ClaimsPrincipal { get; set; }
+        public SecurityToken SecurityToken { get; set; }
+        public bool Successful { get; set; }
+        public string FailureReason { get; set; }
     }
 }

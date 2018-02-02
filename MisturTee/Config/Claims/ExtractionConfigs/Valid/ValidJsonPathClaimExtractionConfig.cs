@@ -3,23 +3,15 @@ using System.Threading.Tasks;
 
 namespace MisturTee.Config.Claims.ExtractionConfigs.Valid
 {
-    /// <summary>
-    /// Validated version of <see cref="JsonPathClaimExtractionConfig"/> used to actually extract the claim
-    /// </summary>
-    public class ValidJsonPathClaimExtractionConfig : IValidClaimsExtractionConfig
+    /// <inheritdoc />
+    internal class ValidJsonPathClaimExtractionConfig : IValidClaimsExtractionConfig
     {
         private readonly JsonPathClaimExtractionConfig.ExtractValueByJsonPathAsync _extract;
         private readonly string _path;
         private readonly string _claimName;
 
-        /// <summary>
-        /// creates a new instance
-        /// </summary>
-        /// <param name="path">jsonPath</param>
-        /// <param name="jsonPathExtraction"><see cref="JsonPathClaimExtractionConfig.ExtractValueByJsonPathAsync"/></param>
-        /// <param name="claimName">name of the claim to extract</param>
-        /// <param name="location"><see cref="ClaimLocation"/> location of the claim value</param>
-        public ValidJsonPathClaimExtractionConfig(string path, JsonPathClaimExtractionConfig.ExtractValueByJsonPathAsync jsonPathExtraction, string claimName, ClaimLocation location)
+        /// <inheritdoc />
+        internal ValidJsonPathClaimExtractionConfig(string path, JsonPathClaimExtractionConfig.ExtractValueByJsonPathAsync jsonPathExtraction, string claimName, ClaimLocation location)
         {
             _path = path;
             _extract = jsonPathExtraction;
@@ -27,14 +19,13 @@ namespace MisturTee.Config.Claims.ExtractionConfigs.Valid
             ClaimLocation = location;
         }
 
+        /// <inheritdoc />
         public ExtractionType ExtractionType => ExtractionType.JsonPath;
+
+        /// <inheritdoc />
         public ClaimLocation ClaimLocation { get; }
 
-        /// <summary>
-        /// Extracts claim using the json and jsonPath
-        /// </summary>
-        /// <param name="json">JSON</param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public async Task<Claim> GetClaimAsync(string json)
         {
             if (json == null)

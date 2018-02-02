@@ -8,6 +8,8 @@ using MisturTee.Config.Claims;
 using MisturTee.Config.Claims.ExtractionConfigs;
 using MisturTee.Config.Claims.ExtractionConfigs.Valid;
 using MisturTee.Config.Routing;
+using Newtonsoft.Json;
+using TokenAuth.Extractors;
 
 namespace TokenAuth
 {
@@ -17,6 +19,8 @@ namespace TokenAuth
         {
             _routes = routes;
         }
+
+        public List<RouteDefinition> Routes => GetRouteDefinitions();
 
         private List<SerializableRouteConfig> _routes;
 
@@ -53,15 +57,15 @@ namespace TokenAuth
 
     public class SerializableRouteClaimsConfig : RouteClaimsConfig
     {
-        private IList<IValidClaimsExtractionConfig> _validClaimsExtractionConfigs;
+        private IList<SerializableClaimsExtractionConfig> _validClaimsExtractionConfigs;
 
-        public new IList<IValidClaimsExtractionConfig> ExtractionConfigs
+        public new IList<SerializableClaimsExtractionConfig> ExtractionConfigs
         {
             get => _validClaimsExtractionConfigs;
             set
             {
                 _validClaimsExtractionConfigs = value;
-                base.ExtractionConfigs = value;
+                base.ExtractionConfigs = value.Select(x => x.Build()).ToList();
             }
         }
     }
@@ -70,13 +74,19 @@ namespace TokenAuth
     {
         private Regex _parsedRegex;
 
+        public new string ClaimName
+        {
+            get => base.ClaimName;
+            set => base.ClaimName = value;
+        }
+
         public SerializableExtractionType ExtractionStrategem { get; set; }
         public ClaimLocation ClaimLocation { get; set; }
         public string Path { get; set; }
         public string Regex { get; set; }
         public string KeyName { get; set; }
 
-        public new ExtractionType ExtractionType
+        private new ExtractionType ExtractionType
         {
             get
             {
@@ -94,6 +104,9 @@ namespace TokenAuth
             }
         }
 
+        [JsonConstructor]
+        private SerializableClaimsExtractionConfig() { }
+
         public SerializableClaimsExtractionConfig(string claimName) : base(claimName)
         {
         }
@@ -107,13 +120,13 @@ namespace TokenAuth
             switch (ExtractionStrategem)
             {
                 case SerializableExtractionType.JsonPath:
-                    return new ValidJsonPathClaimExtractionConfig(Path, ExtractionFunctions.JsonPathFunc, ClaimName,
+                    return new ValidatedJsonPathExtractor(Path, ExtractionFunctions.JsonPathFunc, ClaimName,
                         ClaimLocation);
                 case SerializableExtractionType.KeyValue:
-                    return new ValidKeyValueClaimExtractionConfig(ExtractionFunctions.KeyValueFunc, KeyName, ClaimLocation,
+                    return new ValidatedKeyValueExtractor(ExtractionFunctions.KeyValueFunc, KeyName, ClaimLocation,
                         ClaimName);
                 case SerializableExtractionType.RegEx:
-                    return new ValidRegexClaimExtractionConfig(ExtractionFunctions.RegexFunc, _parsedRegex, ClaimName,
+                    return new ValidatedRegExExtractor(ExtractionFunctions.RegexFunc, _parsedRegex, ClaimName,
                         ClaimLocation);
                 default:
                     return null;
@@ -122,6 +135,10 @@ namespace TokenAuth
 
         private bool IsValid()
         {
+            if (string.IsNullOrEmpty(ClaimName))
+            {
+                return false;
+            }
             if (ExtractionType == ExtractionType.None)
             {
                 return false;

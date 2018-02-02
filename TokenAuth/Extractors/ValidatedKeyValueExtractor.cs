@@ -1,29 +1,31 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using MisturTee.Config.Claims;
+using MisturTee.Config.Claims.ExtractionConfigs;
+using MisturTee.Config.Claims.ExtractionConfigs.Valid;
 using Newtonsoft.Json;
 
-namespace MisturTee.Config.Claims.ExtractionConfigs.Valid
+namespace TokenAuth.Extractors
 {
-    /// <inheritdoc />
-    internal class ValidKeyValueClaimExtractionConfig : IValidClaimsExtractionConfig
+    public class ValidatedKeyValueExtractor : IValidClaimsExtractionConfig
     {
-        private readonly KeyValueClaimExtractionConfig.KeyValueExtractionAsync _extract;
-        private readonly string _keyName;
-        private readonly string _claimName;
+        private KeyValueClaimExtractionConfig.KeyValueExtractionAsync _extract;
+        private string _keyName;
+        private string _claimName;
 
         /// <inheritdoc />
-        internal ValidKeyValueClaimExtractionConfig(KeyValueClaimExtractionConfig.KeyValueExtractionAsync func, string key, ClaimLocation location, string claimName)
+        public ValidatedKeyValueExtractor(KeyValueClaimExtractionConfig.KeyValueExtractionAsync func, string key, ClaimLocation location, string claimName)
         {
             _extract = func;
             _keyName = key;
             ClaimLocation = location;
             _claimName = claimName;
         }
-        
+
         /// <inheritdoc />
         public ExtractionType ExtractionType => ExtractionType.KeyValue;
-        
+
         /// <inheritdoc />
         public ClaimLocation ClaimLocation { get; }
 

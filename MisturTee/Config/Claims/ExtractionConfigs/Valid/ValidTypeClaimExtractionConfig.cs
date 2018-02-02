@@ -4,17 +4,13 @@ using Newtonsoft.Json;
 
 namespace MisturTee.Config.Claims.ExtractionConfigs.Valid
 {
+    /// <inheritdoc />
     public class ValidTypeClaimExtractionConfig<T> : IValidClaimsExtractionConfig
     {
         private readonly TypeClaimExtractionConfig<T>.ExtractClaimForTypeAsync _typeExtraction;
         private readonly string _claimName;
 
-        /// <summary>
-        /// Used by <see cref="TypeClaimExtractionConfig{T}"/> after having validated itself
-        /// </summary>
-        /// <param name="func">function that returns claim value</param>
-        /// <param name="claim">name of the claim</param>
-        /// <param name="location"><see cref="ClaimLocation"/>, location of the claim</param>
+        /// <inheritdoc />
         public ValidTypeClaimExtractionConfig(TypeClaimExtractionConfig<T>.ExtractClaimForTypeAsync func, string claim, ClaimLocation location)
         {
             _typeExtraction = func;
@@ -22,14 +18,13 @@ namespace MisturTee.Config.Claims.ExtractionConfigs.Valid
             ClaimLocation = location;
         }
 
+        /// <inheritdoc />
         public ExtractionType ExtractionType => ExtractionType.Type;
+
+        /// <inheritdoc />
         public ClaimLocation ClaimLocation { get; }
 
-        /// <summary>
-        /// runs the extraction function and returns <see cref="Claim"/>
-        /// </summary>
-        /// <param name="content"><see cref="T"/> represented in JSON</param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public async Task<Claim> GetClaimAsync(string content)
         {
             var value = await _typeExtraction(JsonConvert.DeserializeObject<T>(content)).ConfigureAwait(false);

@@ -25,18 +25,20 @@ namespace TokenAuth.Middleware
             if (!string.IsNullOrEmpty(token))
             {
                 var jwtValidationResult = TokenManager.ValidateJwt(token, TokenManager.DefaultValidationParameters);
-                if (jwtValidationResult.Key == null || jwtValidationResult.Value == null)
+                if (!jwtValidationResult.Successful)
                 {
                     context.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
                     var bytesToWrite = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
                     {
-                        YouShallNotPass = "SaysGandalf"
+                        YouShallNotPass = "SaysGandalf",
+                        Reason = jwtValidationResult.FailureReason
                     }));
                     await context.Response.Body.WriteAsync(bytesToWrite, 0, bytesToWrite.Length).ConfigureAwait(false);
+                    return;
                 }
                 else
                 {
-                    var claims = jwtValidationResult.Key.Claims;
+                    var claims = jwtValidationResult.ClaimsPrincipal.Claims;
                     claims = claims.Select(x =>
                     {
                         if (string.Equals(x.Type, "supersecretid", StringComparison.OrdinalIgnoreCase))

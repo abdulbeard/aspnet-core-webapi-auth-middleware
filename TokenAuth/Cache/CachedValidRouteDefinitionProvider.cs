@@ -8,6 +8,7 @@ using MisturTee.Config;
 using MisturTee.Config.Claims;
 using MisturTee.Config.Claims.ExtractionConfigs.Valid;
 using MisturTee.Config.Routing;
+using Newtonsoft.Json;
 
 namespace TokenAuth.Cache
 {
@@ -38,6 +39,11 @@ namespace TokenAuth.Cache
 
         private IEnumerable<IRouteDefinitions> GetRouteDefinitions()
         {
+            var routeDefsFromConfig = new ConfigurationManager().JsonAppsetting<IEnumerable<SerializableRouteDefinition>>("routeClaimsConfig");
+            if (routeDefsFromConfig != null)
+            {
+                return routeDefsFromConfig;
+            }
             var routeDefs = new List<SerializableRouteDefinition>();
             dynamic response = new ExpandoObject();
             response.ErrorCode = 2500;
@@ -56,20 +62,20 @@ namespace TokenAuth.Cache
                             Response = response,
                             Headers = new HeaderDictionary()
                         },
-                        ExtractionConfigs = new List<IValidClaimsExtractionConfig>
+                        ExtractionConfigs = new List<SerializableClaimsExtractionConfig>
                         {
                             new SerializableClaimsExtractionConfig("ReportViolationEmail")
                             {
                                 ClaimLocation = ClaimLocation.Body,
                                 ExtractionStrategem = SerializableExtractionType.JsonPath,
                                 Path = "$.ReportViolationEmail"
-                            }.Build(),
+                            },
                             new SerializableClaimsExtractionConfig("superSecretId")
                             {
                                 ClaimLocation = ClaimLocation.Body,
                                 ExtractionStrategem = SerializableExtractionType.JsonPath,
                                 Path = "$.SuperSecretId"
-                            }.Build()
+                            }
                         },
                         ValidationConfigs = new List<ClaimValidationConfig>
                         {
@@ -91,6 +97,7 @@ namespace TokenAuth.Cache
                     }
                 }
             }));
+            //System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(routeDefs));
             return routeDefs;
         }
     }

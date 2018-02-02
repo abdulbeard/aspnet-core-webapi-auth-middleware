@@ -26,7 +26,7 @@ namespace MisturTee.Config
             }
         }
 
-        public T GetFromJsonAppsetting<T>(string appsettingsPath)
+        public T JsonAppsetting<T>(string appsettingsPath)
         {
             //var instance = Activator.CreateInstance<T>();
             //var section = _configuration.GetSection(appsettingsPath);
@@ -40,7 +40,7 @@ namespace MisturTee.Config
                 var value = _configuration[appsettingsPath];
                 return string.IsNullOrEmpty(value) ? default(T) : JsonConvert.DeserializeObject<T>(value);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return default(T);
             }

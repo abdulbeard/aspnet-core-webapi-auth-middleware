@@ -36,7 +36,7 @@ namespace TokenAuth.Controllers
         {
             authorization = authorization.Replace("Bearer ", "");
             var validationResult = TokenManager.ValidateJwt(authorization, TokenManager.DefaultValidationParameters);
-            return validationResult.Key != null && validationResult.Value != null;
+            return validationResult.Successful;
         }
     }
 }

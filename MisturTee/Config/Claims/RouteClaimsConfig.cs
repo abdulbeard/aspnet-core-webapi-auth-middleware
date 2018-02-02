@@ -29,7 +29,7 @@ namespace MisturTee.Config.Claims
             response.Message = "The following claims require values";
             Response = response;
         }
-        public IHeaderDictionary Headers { get; set; }
+        public HeaderDictionary Headers { get; set; }
         public HttpStatusCode HttpStatusCode { get; set; }
         public ExpandoObject Response { get; set; }
         public BadRequestResponseOverride BadRequestResponseOverride { get; set; }
