@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Security.Claims;
 using MisturTee.Config.Claims.ExtractionConfigs.Valid;
-using Newtonsoft.Json;
 
 namespace MisturTee.Config.Claims.ExtractionConfigs
 {

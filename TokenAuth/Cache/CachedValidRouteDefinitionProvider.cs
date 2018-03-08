@@ -6,9 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using MisturTee.Config;
 using MisturTee.Config.Claims;
-using MisturTee.Config.Claims.ExtractionConfigs.Valid;
 using MisturTee.Config.Routing;
-using Newtonsoft.Json;
 
 namespace TokenAuth.Cache
 {

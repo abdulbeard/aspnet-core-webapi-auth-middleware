@@ -11,6 +11,12 @@ namespace MisturTee.Utils
 {
     public static class RoutesUtils
     {
+        public static async Task<RouteMatchResult> GetMatchingRoute(HttpContext context)
+        {
+            var routeMatchResult = await RoutesUtils.MatchRouteAsync(context).ConfigureAwait(false);
+            return new RouteMatchResult() { Route = routeMatchResult.Key, RouteValues = routeMatchResult.Value };
+        }
+
         internal static async Task<KeyValuePair<RouteDefinition, RouteValueDictionary>> MatchRouteAsync(
             HttpContext context)
         {

@@ -24,6 +24,7 @@ namespace MisturTee.Utils
                         Value = x.ActualValue
                     });
                 badRequestResponse.Response = dynamicMissingClaimsResponseResponse;
+                context.Response.Headers.Append("Content-Type", "application/json");
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(badRequestResponse.Response))
                     .ConfigureAwait(false);
             }

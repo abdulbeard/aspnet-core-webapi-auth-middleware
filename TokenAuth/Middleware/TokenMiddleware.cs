@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -10,10 +8,10 @@ using TokenAuth.Auth;
 
 namespace TokenAuth.Middleware
 {
-    public class JwtMiddleware
+    public class TokenMiddleware
     {
         private readonly RequestDelegate _next;
-        public JwtMiddleware(RequestDelegate next)
+        public TokenMiddleware(RequestDelegate next)
         {
             _next = next;
         }
@@ -24,7 +22,7 @@ namespace TokenAuth.Middleware
             var token = authHeader.Count > 0 ? authHeader.First().Replace("Bearer ", string.Empty) : string.Empty;
             if (!string.IsNullOrEmpty(token))
             {
-                var jwtValidationResult = TokenManager.ValidateJwt(token, TokenManager.DefaultValidationParameters);
+                var jwtValidationResult = TokenManager.ValidateToken(token, TokenManager.DefaultValidationParameters);
                 if (!jwtValidationResult.Successful)
                 {
                     context.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
@@ -38,16 +36,7 @@ namespace TokenAuth.Middleware
                 }
                 else
                 {
-                    var claims = jwtValidationResult.ClaimsPrincipal.Claims;
-                    claims = claims.Select(x =>
-                    {
-                        if (string.Equals(x.Type, "supersecretid", StringComparison.OrdinalIgnoreCase))
-                        {
-                            return new Claim(x.Type, TokenManager.SymmetricallyDecryptString(x.Value));
-                        }
-                        return x;
-                    });
-                    context.Items.Add("ExpectedClaims", claims);
+                    context.Items.Add("ExpectedClaims", jwtValidationResult.ClaimsPrincipal.Claims);
                 }
             }
             await _next(context).ConfigureAwait(false);

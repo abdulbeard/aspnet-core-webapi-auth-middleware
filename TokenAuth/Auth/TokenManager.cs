@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
-using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using MisturTee.Extensions;
 
@@ -15,10 +10,20 @@ namespace TokenAuth.Auth
 {
     public class TokenManager
     {
-        private const string Key = "jApKAyYRMOQW1lilWun6RKEmn7914LmXlz0Oa2q5wCg=";
-        private const string Iv = "H1Ykk45i/L66XaXv6Hh6Qg==";
+        private static readonly bool _useJweOverJwt = true;
 
-        public static readonly TokenValidationParameters DefaultValidationParameters = new TokenValidationParameters
+        public static string CreateToken(TokenIssuancePolicy policy, IList<Claim> claims)
+        {
+            return _useJweOverJwt ? CreateJwe(policy, claims) : CreateJwt(policy, claims);
+        }
+
+        public static TokenValidationResult ValidateToken(string tokenString,
+            TokenValidationParameters validationParameters)
+        {
+            return _useJweOverJwt ? ValidateJwe(tokenString, validationParameters) : ValidateJwt(tokenString, validationParameters);
+        }
+
+        public static readonly TokenValidationParameters DefaultValidationParameters = _useJweOverJwt ? new TokenValidationParameters
         {
             IssuerSigningKey = new TokenIssuancePolicy().SecurityKey,
             ValidIssuer = AppDomain.CurrentDomain.FriendlyName,
@@ -29,33 +34,37 @@ namespace TokenAuth.Auth
             TokenDecryptionKey = new EncryptingCredentials(new TokenIssuancePolicy().SecurityKey,
                 JwtConstants.DirectKeyUseAlg,
                 SecurityAlgorithms.Aes256CbcHmacSha512).Key
+        } : new TokenValidationParameters
+        {
+            IssuerSigningKey = new TokenIssuancePolicy().SecurityKey,
+            ValidIssuer = AppDomain.CurrentDomain.FriendlyName,
+            ValidateIssuer = true,
+            ValidateLifetime = true,
+            ValidateAudience = false,
+            TokenDecryptionKey = new SigningCredentials(new TokenIssuancePolicy().SecurityKey,
+                SecurityAlgorithms.HmacSha512).Key
         };
 
-        public static string CreateJwt(TokenIssuancePolicy policy, IList<Claim> claims)
+        #region jwt
+        private static string CreateJwt(TokenIssuancePolicy policy, IList<Claim> claims)
         {
-            policy.Expiration = DateTime.Now.AddYears(2) - DateTime.Now;
-            var claimsss = GetPayloadClaims(claims, policy);
-            //return JwtCeption(policy, claims);
-            return JustJwe(policy, claims);
-            var header = new JwtHeader(new SigningCredentials(
-                policy.SecurityKey,
-                SecurityAlgorithms.HmacSha512Signature));
+            var header = new JwtHeader(new SigningCredentials(policy.SecurityKey, SecurityAlgorithms.HmacSha512));
             var payload = new JwtPayload(GetPayloadClaims(claims, policy));
             var token = new JwtSecurityToken(header, payload);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public static TokenValidationResult ValidateJwt(string tokenString, TokenValidationParameters validationParameters)
+        private static TokenValidationResult ValidateJwt(string tokenString, TokenValidationParameters validationParameters)
         {
-            var tokenParts = tokenString.Split(new char[] { '.' }, 5 + 1);
             try
             {
                 var claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(tokenString, validationParameters, out var validatedToken);
-                return new TokenValidationResult{
+                return HandleEncryptedClaims(new TokenValidationResult
+                {
                     ClaimsPrincipal = claimsPrincipal,
                     SecurityToken = validatedToken,
                     Successful = true
-                };
+                });
             }
             catch (Exception ex)
             {
@@ -67,181 +76,60 @@ namespace TokenAuth.Auth
             }
         }
 
-        private static string JustJwe(TokenIssuancePolicy policy, IList<Claim> claims)
+        private static TokenValidationResult HandleEncryptedClaims(TokenValidationResult validationResult)
+        {
+            var claims = new List<Claim>();
+            foreach (var claim in validationResult.ClaimsPrincipal.Claims)
+            {
+                if (claim.Type.StartsWith("encrypted:"))
+                {
+                    claims.Add(new Claim(claim.Type.Replace("encrypted:", ""), CryptoUtils.SymmetricallyDecryptString(claim.Value)));
+                }
+                else
+                {
+                    claims.Add(claim);
+                }
+            }
+            validationResult.ClaimsPrincipal =
+                new ClaimsPrincipal(new List<ClaimsIdentity>() { new ClaimsIdentity(claims) }.AsEnumerable());
+            return validationResult;
+        }
+
+        #endregion
+
+        #region jwe
+
+        private static string CreateJwe(TokenIssuancePolicy policy, IList<Claim> claims)
         {
             var header = new JwtHeader(new EncryptingCredentials(policy.SecurityKey, JwtConstants.DirectKeyUseAlg,
                 SecurityAlgorithms.Aes256CbcHmacSha512));
             var payload = new JwtPayload(GetPayloadClaims(claims, policy));
             var token = new JwtSecurityToken(header, payload);
             return new JwtSecurityTokenHandler().WriteToken(token);
-
         }
 
-        private static string JwtCeption(TokenIssuancePolicy policy, IList<Claim> claims)
+        private static TokenValidationResult ValidateJwe(string tokenString, TokenValidationParameters validationParameters)
         {
-            var signingCredentials = new SigningCredentials(
-                policy.SecurityKey,
-                SecurityAlgorithms.HmacSha512Signature);
-            var innerJwtHeader = new JwtHeader(signingCredentials);
-            var innerJwtPayload = new JwtPayload(GetPayloadClaims(claims, policy));
-            var rawHeader = innerJwtHeader.Base64UrlEncode();
-            var rawPayload = innerJwtPayload.Base64UrlEncode();
-            var encodedSignature = signingCredentials == null ? string.Empty : CreateEncodedSignature(string.Concat(rawHeader, ".", rawPayload), signingCredentials);
-            var innerJwt = new JwtSecurityToken(innerJwtHeader, innerJwtPayload, rawHeader, rawPayload, rawSignature:encodedSignature );
-            //var header = new JwtHeader(new SigningCredentials(
-            //    policy.SecurityKey,
-            //    SecurityAlgorithms.HmacSha512Signature));
-            var encryptingCredentials = new EncryptingCredentials(policy.SecurityKey, JwtConstants.DirectKeyUseAlg,
-                SecurityAlgorithms.Aes256CbcHmacSha512);
-            var header = new JwtHeader(encryptingCredentials);
-            var payload = new JwtPayload(GetPayloadClaims(claims, policy));
-
-            var cryptoProviderFactory = encryptingCredentials.CryptoProviderFactory ??
-                                     encryptingCredentials.Key.CryptoProviderFactory;
-
-            var encryptionProvider = cryptoProviderFactory.CreateAuthenticatedEncryptionProvider(encryptingCredentials.Key, encryptingCredentials.Enc);
-
-            var encryptionResult = encryptionProvider.Encrypt(Encoding.UTF8.GetBytes(innerJwt.RawData), Encoding.ASCII.GetBytes(header.Base64UrlEncode()));
-
-
-
-            var token = new JwtSecurityToken(
-                header,
-                innerJwt,
-                header.Base64UrlEncode(),
-                string.Empty,
-                Base64UrlEncoder.Encode(encryptionResult.IV),
-                Base64UrlEncoder.Encode(encryptionResult.Ciphertext),
-                Base64UrlEncoder.Encode(encryptionResult.AuthenticationTag));
-            //token.EncryptingCredentials = new EncryptingCredentials(policy.SecurityKey, JwtConstants.DirectKeyUseAlg,
-            //    SecurityAlgorithms.Aes256CbcHmacSha512);
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        internal static string CreateEncodedSignature(string input, SigningCredentials signingCredentials)
-        {
-            if (input == null)
-                throw LogHelper.LogArgumentNullException(nameof(input));
-
-            if (signingCredentials == null)
-                throw LogHelper.LogArgumentNullException(nameof(signingCredentials));
-
-            var cryptoProviderFactory =
-                signingCredentials.CryptoProviderFactory ?? signingCredentials.Key.CryptoProviderFactory;
-            var signatureProvider =
-                cryptoProviderFactory.CreateForSigning(signingCredentials.Key, signingCredentials.Algorithm);
-            if (signatureProvider == null)
-                throw LogHelper.LogExceptionMessage(new InvalidOperationException(
-                    String.Format(CultureInfo.InvariantCulture, "IDX10636",
-                        (signingCredentials.Key == null ? "Null" : signingCredentials.Key.ToString()),
-                        (signingCredentials.Algorithm ?? "Null"))));
-
             try
             {
-                return Base64UrlEncoder.Encode(signatureProvider.Sign(Encoding.UTF8.GetBytes(input)));
-            }
-            finally
-            {
-                cryptoProviderFactory.ReleaseSignatureProvider(signatureProvider);
-            }
-        }
-
-        public static string SymmetricallyEncryptString(string plainText)
-        {
-            {
-                // Check arguments.
-                if (plainText == null || plainText.Length <= 0)
-                    throw new ArgumentNullException(nameof(plainText));
-                if (Key.Length <= 0)
-                    throw new ArgumentNullException(nameof(Key));
-                if (Iv.Length <= 0)
-                    throw new ArgumentNullException(nameof(Iv));
-                var encrypted = new List<byte>();
-                // Create an Aes object
-                // with the specified key and IV.
-                using (var aesAlg = Aes.Create())
+                var claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(tokenString, validationParameters, out var validatedToken);
+                return HandleEncryptedClaims(new TokenValidationResult
                 {
-                    if (aesAlg != null)
-                    {
-                        aesAlg.Key = Convert.FromBase64String(Key);
-                        aesAlg.IV = Convert.FromBase64String(Iv);
-
-                        // Create a decrytor to perform the stream transform.
-                        var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
-
-                        // Create the streams used for encryption.
-                        using (var msEncrypt = new MemoryStream())
-                        {
-                            using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                            {
-                                using (var swEncrypt = new StreamWriter(csEncrypt))
-                                {
-
-                                    //Write all data to the stream.
-                                    swEncrypt.Write(plainText);
-                                }
-                                encrypted = msEncrypt.ToArray().ToList();
-                            }
-                        }
-                    }
-                }
-
-
-                // Return the encrypted bytes from the memory stream.
-                return Convert.ToBase64String(encrypted.ToArray());
-
+                    ClaimsPrincipal = claimsPrincipal,
+                    SecurityToken = validatedToken,
+                    Successful = true
+                });
             }
-        }
-
-        public static string SymmetricallyDecryptString(string cipherText)
-        {
+            catch (Exception ex)
             {
-                // Check arguments.
-                if (cipherText == null || cipherText.Length <= 0)
-                    throw new ArgumentNullException(nameof(cipherText));
-                if (Key.Length <= 0)
-                    throw new ArgumentNullException(nameof(Key));
-                if (Iv.Length <= 0)
-                    throw new ArgumentNullException(nameof(Iv));
-
-                // Declare the string used to hold
-                // the decrypted text.
-                string plaintext = string.Empty;
-
-                // Create an Aes object
-                // with the specified key and IV.
-                using (var aesAlg = Aes.Create())
+                return new TokenValidationResult
                 {
-                    if (aesAlg != null)
-                    {
-                        aesAlg.Key = Convert.FromBase64String(Key);
-                        aesAlg.IV = Convert.FromBase64String(Iv);
-
-                        // Create a decrytor to perform the stream transform.
-                        var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-
-                        // Create the streams used for decryption.
-                        using (var msDecrypt = new MemoryStream(Convert.FromBase64String(cipherText)))
-                        {
-                            using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                            {
-                                using (var srDecrypt = new StreamReader(csDecrypt))
-                                {
-
-                                    // Read the decrypted bytes from the decrypting stream
-                                    // and place them in a string.
-                                    plaintext = srDecrypt.ReadToEnd();
-                                }
-                            }
-                        }
-                    }
-
-                }
-
-                return plaintext;
-
+                    Successful = false,
+                    FailureReason = ex.Message
+                };
             }
         }
+        #endregion
 
         private static IEnumerable<Claim> GetPayloadClaims(IEnumerable<Claim> claims, TokenIssuancePolicy policy)
         {
@@ -280,7 +168,11 @@ namespace TokenAuth.Auth
                         useDefaultJti = false;
                         break;
                     default:
-                        payloadClaims.Add(claim);
+                        if (claim is EncryptedClaim)
+                        {
+                            payloadClaims.Add(
+                                new Claim($"encrypted:{claim.Type}", CryptoUtils.SymmetricallyEncryptString(claim.Value)));
+                        }
                         break;
                 }
             }

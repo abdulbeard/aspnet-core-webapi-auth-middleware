@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using MisturTee.Config;
 using MisturTee.Config.Routing;
 using MisturTee.Repositories;
+using static MisturTee.Config.Claims.ClaimValidationConfig;
 
 namespace MisturTee.Middleware
 {
@@ -11,20 +12,20 @@ namespace MisturTee.Middleware
     {
         public static async Task<IApplicationBuilder> UseCustomClaimsValidationAsync(this IApplicationBuilder app,
             IEnumerable<IRouteDefinitions> routeDefs,
-            CustomClaimsValidationMiddleware.ClaimValidatorDelegate claimsValidator = null)
+            ClaimValidatorDelegate claimsValidator = null)
         {
             await RoutesRepository.RegisterRoutesAsync(routeDefs).ConfigureAwait(false);
-            CustomClaimsValidationMiddleware.RegisterValidationDelegate(claimsValidator);
-            return app.UseMiddleware<CustomClaimsValidationMiddleware>();
+            Sentinel.RegisterValidationDelegate(claimsValidator);
+            return app.UseMiddleware<Sentinel>();
         }
 
         public static async Task<IApplicationBuilder> UseCustomClaimsValidationAsync(this IApplicationBuilder app,
             IValidRouteDefinitionProvider validRouteDefinitionProvider,
-            CustomClaimsValidationMiddleware.ClaimValidatorDelegate claimsValidator = null)
+            ClaimValidatorDelegate claimsValidator = null)
         {
             await RoutesRepository.RegisterRoutesAsync(validRouteDefinitionProvider).ConfigureAwait(false);
-            CustomClaimsValidationMiddleware.RegisterValidationDelegate(claimsValidator);
-            return app.UseMiddleware<CustomClaimsValidationMiddleware>();
+            Sentinel.RegisterValidationDelegate(claimsValidator);
+            return app.UseMiddleware<Sentinel>();
         }
     }
 }

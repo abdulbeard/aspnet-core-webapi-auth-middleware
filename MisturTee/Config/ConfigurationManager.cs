@@ -28,19 +28,12 @@ namespace MisturTee.Config
 
         public T JsonAppsetting<T>(string appsettingsPath)
         {
-            //var instance = Activator.CreateInstance<T>();
-            //var section = _configuration.GetSection(appsettingsPath);
-            //section.Bind(instance);
-            //return instance;
-
-
-
             try
             {
                 var value = _configuration[appsettingsPath];
                 return string.IsNullOrEmpty(value) ? default(T) : JsonConvert.DeserializeObject<T>(value);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return default(T);
             }

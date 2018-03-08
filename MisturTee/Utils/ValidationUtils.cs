@@ -10,9 +10,15 @@ using MisturTee.Config.Routing;
 
 namespace MisturTee.Utils
 {
-    internal static class ValidationUtils
+    public static class ValidationUtils
     {
-        internal static async Task<bool> ValidateClaimsAsync(RouteDefinition routeDef, HttpContext context,
+        public static async Task<bool> ValidateClaimsAsync(RouteDefinition routeDef, HttpContext context,
+            RouteValueDictionary routeValues)
+        {
+            return await InternalValidateClaimsAsync(routeDef, context, routeValues).ConfigureAwait(false);
+        }
+
+        internal static async Task<bool> InternalValidateClaimsAsync(RouteDefinition routeDef, HttpContext context,
             RouteValueDictionary routeValues)
         {
             if (routeDef?.ClaimsConfig?.ValidationConfigs == null) return true;
