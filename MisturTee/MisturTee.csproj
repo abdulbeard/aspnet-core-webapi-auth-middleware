@@ -2,6 +2,21 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.0-alpha</Version>
+    <Authors>AbdulBeard</Authors>
+    <Company />
+    <Description>MVC6 middleware that lets you extract claims from the current request, using RegEx, JsonPath, KeyValue pairs or using a custom Func. This is so you can validate these claims against claims from your auth token, or assigned to the current user. This is a way to deny unauthorized requests before they hit your application code.
+
+Named after Mr. T's life as a bouncer:
+https://en.wikipedia.org/wiki/Mr._T#Early_life</Description>
+    <PackageLicenseUrl>https://github.com/abdulbeard/aspnet-core-webapi-auth-middleware/blob/master/LICENSE</PackageLicenseUrl>
+    <Copyright>https://github.com/abdulbeard/aspnet-core-webapi-auth-middleware/blob/master/LICENSE</Copyright>
+    <PackageProjectUrl>https://github.com/abdulbeard/aspnet-core-webapi-auth-middleware</PackageProjectUrl>
+    <RepositoryType>Dependency</RepositoryType>
+    <RepositoryUrl>https://github.com/abdulbeard/aspnet-core-webapi-auth-middleware</RepositoryUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/abdulbeard/aspnet-core-webapi-auth-middleware/master/icon.jpg</PackageIconUrl>
+    <PackageTags>middleware mvc6 authorization misturtee mistur tee claim extraction abdulbeard</PackageTags>
+    <PackageReleaseNotes>Alpha version</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

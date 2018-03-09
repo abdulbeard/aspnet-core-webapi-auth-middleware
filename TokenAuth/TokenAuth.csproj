@@ -15,14 +15,11 @@
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Core" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.0.1" />
+    <PackageReference Include="MisturTee" Version="1.0.0-alpha" />
   </ItemGroup>
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\MisturTee\MisturTee.csproj" />
   </ItemGroup>
 
 </Project>

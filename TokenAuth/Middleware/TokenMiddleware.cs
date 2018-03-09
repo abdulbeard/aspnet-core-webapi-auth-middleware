@@ -26,6 +26,7 @@ namespace TokenAuth.Middleware
                 if (!jwtValidationResult.Successful)
                 {
                     context.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                    context.Response.ContentType = "application/json";
                     var bytesToWrite = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
                     {
                         YouShallNotPass = "SaysGandalf",
