@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 
-namespace TokenAuth
+namespace TokenAuth.Auth
 {
     public class CryptoUtils
     {

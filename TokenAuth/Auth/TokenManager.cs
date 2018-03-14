@@ -10,7 +10,7 @@ namespace TokenAuth.Auth
 {
     public class TokenManager
     {
-        private static readonly bool _useJweOverJwt = true;
+        private static readonly bool _useJweOverJwt = false;
 
         public static string CreateToken(TokenIssuancePolicy policy, IList<Claim> claims)
         {

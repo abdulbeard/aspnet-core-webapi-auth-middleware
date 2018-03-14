@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TokenAuth", "TokenAuth\Toke
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MisturTee", "MisturTee\MisturTee.csproj", "{C14AD67C-29FC-46A2-B7D8-622AED5C44D8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MisturTee.TestMeFool", "MisturTee.TestMeFool\MisturTee.TestMeFool.csproj", "{A3404A4A-BDBA-42A9-AF55-FC96EABB8E5F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C14AD67C-29FC-46A2-B7D8-622AED5C44D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C14AD67C-29FC-46A2-B7D8-622AED5C44D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C14AD67C-29FC-46A2-B7D8-622AED5C44D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3404A4A-BDBA-42A9-AF55-FC96EABB8E5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3404A4A-BDBA-42A9-AF55-FC96EABB8E5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3404A4A-BDBA-42A9-AF55-FC96EABB8E5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3404A4A-BDBA-42A9-AF55-FC96EABB8E5F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -13,7 +13,7 @@ namespace MisturTee.Utils
     {
         public static async Task<RouteMatchResult> GetMatchingRoute(HttpContext context)
         {
-            var routeMatchResult = await RoutesUtils.MatchRouteAsync(context).ConfigureAwait(false);
+            var routeMatchResult = await MatchRouteAsync(context).ConfigureAwait(false);
             return new RouteMatchResult() { Route = routeMatchResult.Key, RouteValues = routeMatchResult.Value };
         }
 

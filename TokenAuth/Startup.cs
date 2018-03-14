@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MisturTee.Config;
+using MisturTee.Config.Routing;
 using MisturTee.Middleware;
 using MisturTee.Utils;
 using TokenAuth.Cache;
 using TokenAuth.Middleware;
+using TokenAuth.Routes;
 
 namespace TokenAuth
 {
@@ -36,7 +39,7 @@ namespace TokenAuth
                 app.UseDeveloperExceptionPage();
             }
             app.UseMiddleware<TokenMiddleware>();
-            //app.UseCustomClaimsValidationAsync(new List<IRouteDefinitions> { new ValuesRoutes() }).Wait();
+            app.UseCustomClaimsValidationAsync(new List<IRouteDefinitions> { new ValuesRoutes() }).Wait();
             app.UseCustomClaimsValidationAsync(new CachedValidRouteDefinitionProvider(memoryCache), async (context) =>
             {
                 var matchedRouteResult = await RoutesUtils.GetMatchingRoute(context).ConfigureAwait(false);

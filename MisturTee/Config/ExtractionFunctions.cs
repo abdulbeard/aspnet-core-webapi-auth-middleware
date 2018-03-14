@@ -10,7 +10,7 @@ namespace MisturTee.Config
     {
         public static Task<string> JsonPathFunc(string body, string path)
         {
-            var extractedValues = new JsonUtils().GetValueFromJson(body, path);
+            var extractedValues = JsonUtils.GetValueFromJson(body, path);
             return Task.FromResult(extractedValues?.FirstOrDefault() ?? string.Empty);
         }
 

@@ -8,7 +8,6 @@ using MisturTee.Config.Claims;
 using MisturTee.Config.Claims.ExtractionConfigs;
 using MisturTee.Config.Claims.ExtractionConfigs.Valid;
 using MisturTee.Config.Routing;
-using Newtonsoft.Json;
 using TokenAuth.Extractors;
 
 namespace TokenAuth
@@ -103,9 +102,6 @@ namespace TokenAuth
                 }
             }
         }
-
-        [JsonConstructor]
-        private SerializableClaimsExtractionConfig() { }
 
         public SerializableClaimsExtractionConfig(string claimName) : base(claimName)
         {
