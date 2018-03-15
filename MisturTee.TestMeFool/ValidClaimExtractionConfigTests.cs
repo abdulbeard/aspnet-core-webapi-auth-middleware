@@ -220,8 +220,7 @@ namespace MisturTee.TestMeFool
         public void TypeExtraction_NullExtractionFunction()
         {
             const string claimName = "PityTheFoolClaim";
-            TypeClaimExtractionConfig<TestingType>.ExtractClaimForTypeAsync extractionFunc = null;
-            var config = new ValidTypeClaimExtractionConfig<TestingType>(extractionFunc, claimName, ClaimLocation.Body);
+            var config = new ValidTypeClaimExtractionConfig<TestingType>(null, claimName, ClaimLocation.Body);
             Assert.True(config.ClaimLocation.Equals(ClaimLocation.Body));
             Assert.True(config.ExtractionType.Equals(ExtractionType.Type));
             var instance = new TestingType() { Yo = "lo", No = "lo" };
