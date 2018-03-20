@@ -91,19 +91,24 @@ namespace MisturTee.Utils
 
         private static List<KeyValuePair<string, List<object>>> QueryCollectionToKvp(IQueryCollection iqc)
         {
-            return iqc.Keys.Select(key => new KeyValuePair<string, List<object>>(key, iqc[key].ToArray().Select(x => (object)x).ToList())).ToList();
+            return iqc?.Keys?.Select(key =>
+                       new KeyValuePair<string, List<object>>(key,
+                           iqc[key].ToArray()?.Select(x => (object) x).ToList()))?.ToList() ??
+                   new List<KeyValuePair<string, List<object>>>();
         }
 
         private static List<KeyValuePair<string, List<object>>> HeaderDictToKvp(IEnumerable<KeyValuePair<string, StringValues>> arg, IHeaderDictionary dict)
         {
-            return arg.Select(x =>
-                new KeyValuePair<string, List<object>>(x.Key,
-                    dict.GetCommaSeparatedValues(x.Key).Select(y => (object)y).ToList())).ToList();
+            return arg?.Select(x =>
+                       new KeyValuePair<string, List<object>>(x.Key,
+                           dict.GetCommaSeparatedValues(x.Key).Select(y => (object) y).ToList())).ToList() ??
+                   new List<KeyValuePair<string, List<object>>>();
         }
 
         private static List<KeyValuePair<string, List<object>>> RouteValueDictionaryToKvp(IDictionary<string, object> arg)
         {
-            return arg.Select(x => new KeyValuePair<string, List<object>>(x.Key, new List<object> { x.Value })).ToList();
+            return arg?.Select(x => new KeyValuePair<string, List<object>>(x.Key, new List<object> {x.Value}))
+                       .ToList() ?? new List<KeyValuePair<string, List<object>>>();
         }
     }
 }

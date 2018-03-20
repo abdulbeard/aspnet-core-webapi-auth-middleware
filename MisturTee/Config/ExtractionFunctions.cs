@@ -16,7 +16,7 @@ namespace MisturTee.Config
 
         public static Task<string> KeyValueFunc(List<KeyValuePair<string, List<object>>> listKvp, string keyName)
         {
-            return Task.FromResult(listKvp.FirstOrDefault(x => x.Key == keyName).Value?.First().ToString() ?? string.Empty);
+            return Task.FromResult(listKvp?.FirstOrDefault(x => x.Key == keyName).Value?.First()?.ToString() ?? string.Empty);
         }
 
         public static Task<string> RegexFunc(string data, Regex regex)

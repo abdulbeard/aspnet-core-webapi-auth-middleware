@@ -27,9 +27,10 @@ namespace MisturTee.Config.Claims.ExtractionConfigs
         /// Configures <see cref="TypeClaimExtractionConfig{T}"/> by setting its extraction function />
         /// </summary>
         /// <param name="func">function used to extract claim value</param>
-        public void ConfigureExtraction(ExtractClaimForTypeAsync func)
+        public ClaimsExtractionConfig ConfigureExtraction(ExtractClaimForTypeAsync func)
         {
             _typeExtraction = func;
+            return this;
         }
 
         /// <summary>

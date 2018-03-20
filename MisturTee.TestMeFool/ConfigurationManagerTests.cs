@@ -14,6 +14,9 @@ namespace MisturTee.TestMeFool
         {
             var loglevelCount = new ConfigurationManager().Appsettings<int>("Logging:Console:LogLevel:Count");
             Assert.Equal(54, loglevelCount);
+
+            var refreshSeconds = new ConfigurationManager().Appsettings<int>("MrT:RefreshFrequencyInSeconds");
+            Assert.Equal(61, refreshSeconds);
         }
 
         [Fact]

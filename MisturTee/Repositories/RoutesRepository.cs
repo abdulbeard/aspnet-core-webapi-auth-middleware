@@ -7,7 +7,7 @@ using MisturTee.Utils;
 
 namespace MisturTee.Repositories
 {
-    internal class RoutesRepository
+    internal static class RoutesRepository
     {
         private static Dictionary<string, List<InternalRouteDefinition>> _routes;
         private static readonly object LockObject = new object();
@@ -19,11 +19,7 @@ namespace MisturTee.Repositories
         private const int DefaultRefreshFrequencyInSeconds = 60;
 
 
-        public const string AppSettingForRefreshFrequency = "MrT:RefreshFrequencyInSeconds";
-
-        private RoutesRepository()
-        {
-        }
+        private const string AppSettingForRefreshFrequency = "MrT:RefreshFrequencyInSeconds";
 
         internal static async Task<Dictionary<string, List<InternalRouteDefinition>>> GetRoutesAsync()
         {
@@ -31,14 +27,7 @@ namespace MisturTee.Repositories
             {
                 return _routes;
             }
-            if (_refreshTimespan == TimeSpan.MinValue)
-            {
-                var refreshFrequency = new ConfigurationManager().Appsettings<int>(AppSettingForRefreshFrequency);
-                refreshFrequency = refreshFrequency == default(int)
-                    ? DefaultRefreshFrequencyInSeconds
-                    : refreshFrequency;
-                _refreshTimespan = TimeSpan.FromSeconds(refreshFrequency);
-            }
+            LoadRefreshTimestamp();
             if (DateTime.Now - _lastRetrievedAt > _refreshTimespan)
             {
                 var routes = await _routeDefinitionProvider.GetAsync().ConfigureAwait(false);
@@ -52,11 +41,24 @@ namespace MisturTee.Repositories
             return _routes;
         }
 
+        private static void LoadRefreshTimestamp()
+        {
+            if (_refreshTimespan == TimeSpan.MinValue)
+            {
+                var refreshFrequency = new ConfigurationManager().Appsettings<int>(AppSettingForRefreshFrequency);
+                refreshFrequency = refreshFrequency == default(int)
+                    ? DefaultRefreshFrequencyInSeconds
+                    : refreshFrequency;
+                _refreshTimespan = TimeSpan.FromSeconds(refreshFrequency);
+            }
+        }
+
         internal static Task RegisterRoutesAsync(IEnumerable<IRouteDefinitions> routeDefs)
         {
             lock (LockObject)
             {
                 _routes = RoutesUtils.GetValidRouteDefs(routeDefs);
+                _routeDefinitionProvider = null;
                 _useProvider = false;
             }
             return Task.CompletedTask;
