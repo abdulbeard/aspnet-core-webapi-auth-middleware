@@ -15,6 +15,7 @@ using MisturTee.Config.Claims.ExtractionConfigs;
 using MisturTee.Config.Claims.ExtractionConfigs.Valid;
 using MisturTee.Config.Routing;
 using MisturTee.Repositories;
+using MisturTee.TestMeFool.Claims;
 using Newtonsoft.Json;
 using Xunit;
 

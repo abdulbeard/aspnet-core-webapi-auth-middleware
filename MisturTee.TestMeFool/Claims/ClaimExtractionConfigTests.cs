@@ -3,10 +3,9 @@ using System.Text.RegularExpressions;
 using MisturTee.Config;
 using MisturTee.Config.Claims;
 using MisturTee.Config.Claims.ExtractionConfigs;
-using MisturTee.Config.Claims.ExtractionConfigs.Valid;
 using Xunit;
 
-namespace MisturTee.TestMeFool
+namespace MisturTee.TestMeFool.Claims
 {
     public class ClaimExtractionConfigTests
     {

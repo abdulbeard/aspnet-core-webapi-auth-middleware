@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace MisturTee.Utils
 {
-    internal class ResponseUtils
+    internal static class ResponseUtils
     {
         internal static async Task CreateResponse(ValidationResult validationResult, HttpContext context,
             BadRequestResponse badRequestResponse)

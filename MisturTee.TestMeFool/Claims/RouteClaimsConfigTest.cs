@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Net;
@@ -8,11 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using MisturTee.Config.Claims;
-using MisturTee.Config.Claims.ExtractionConfigs.Valid;
 using MisturTee.Utils;
 using Xunit;
 
-namespace MisturTee.TestMeFool
+namespace MisturTee.TestMeFool.Claims
 {
     public class RouteClaimsConfigTest
     {

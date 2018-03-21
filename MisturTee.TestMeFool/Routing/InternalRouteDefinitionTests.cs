@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using MisturTee.Config;
 using MisturTee.Config.Claims;
 using MisturTee.Config.Claims.ExtractionConfigs;
 using MisturTee.Config.Claims.ExtractionConfigs.Valid;
 using MisturTee.Config.Routing;
+using MisturTee.TestMeFool.Claims;
 using Xunit;
 
 namespace MisturTee.TestMeFool.Routing
@@ -47,9 +47,12 @@ namespace MisturTee.TestMeFool.Routing
             try
             {
                 var internalRouteDef = new InternalRouteDefinition(routeDef);
-                Assert.False(true);
+                Assert.False(internalRouteDef == null);
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         [Fact]

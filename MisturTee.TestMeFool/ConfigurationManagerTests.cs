@@ -1,8 +1,5 @@
 ﻿using MisturTee.Config;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using MisturTee.TestMeFool.Claims;
 using Xunit;
 
 namespace MisturTee.TestMeFool
@@ -38,7 +35,6 @@ namespace MisturTee.TestMeFool
         [Fact]
         public void Appsettings_JsonAppsetting_InvalidJson()
         {
-            var testingType = new TestingType() { Yo = "lo", No = "lo" };
             var testingTypeDeserialized = new ConfigurationManager().JsonAppsetting<TestingType>("invalidJson");
             Assert.Null(testingTypeDeserialized);
         }

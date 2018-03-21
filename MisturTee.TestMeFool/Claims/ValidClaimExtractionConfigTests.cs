@@ -8,7 +8,7 @@ using MisturTee.Config.Claims.ExtractionConfigs.Valid;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace MisturTee.TestMeFool
+namespace MisturTee.TestMeFool.Claims
 {
     public class ValidClaimExtractionConfigTests
     {

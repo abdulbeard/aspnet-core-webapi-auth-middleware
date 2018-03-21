@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using MisturTee.Config;
 using Xunit;
@@ -28,10 +27,13 @@ namespace MisturTee.TestMeFool
             var jsonPath = "$.title";
             try
             {
-                var jsonExtracted = ExtractionFunctions.JsonPathFunc(json, jsonPath).Result;
+                ExtractionFunctions.JsonPathFunc(json, jsonPath).Wait();
                 Assert.True(false);
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         [Fact]
@@ -57,10 +59,13 @@ namespace MisturTee.TestMeFool
             var key = "Authorization";
             try
             {
-                var result = ExtractionFunctions.KeyValueFunc(null, key).Result;
+                ExtractionFunctions.KeyValueFunc(null, key).Wait();
                 Assert.True(false);
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         [Fact]

@@ -52,6 +52,7 @@ namespace MisturTee.Utils
                 case ClaimLocation.Body:
                     {
                         var bodyMemStream = new MemoryStream();
+                        req.Body.Position = 0;
                         req.Body.CopyTo(bodyMemStream);
                         var stringBody = System.Text.Encoding.UTF8.GetString(bodyMemStream.ToArray());
                         return stringBody;
@@ -93,7 +94,7 @@ namespace MisturTee.Utils
         {
             return iqc?.Keys?.Select(key =>
                        new KeyValuePair<string, List<object>>(key,
-                           iqc[key].ToArray()?.Select(x => (object) x).ToList()))?.ToList() ??
+                           iqc[key].ToArray()?.Select(x => (object) x).ToList())).ToList() ??
                    new List<KeyValuePair<string, List<object>>>();
         }
 
