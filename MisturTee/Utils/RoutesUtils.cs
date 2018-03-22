@@ -14,7 +14,7 @@ namespace MisturTee.Utils
         public static async Task<RouteMatchResult> GetMatchingRoute(HttpContext context)
         {
             var routeMatchResult = await MatchRouteAsync(context).ConfigureAwait(false);
-            return new RouteMatchResult() { Route = routeMatchResult.Key, RouteValues = routeMatchResult.Value };
+            return new RouteMatchResult() {Route = routeMatchResult.Key, RouteValues = routeMatchResult.Value};
         }
 
         internal static async Task<KeyValuePair<RouteDefinition, RouteValueDictionary>> MatchRouteAsync(
@@ -25,8 +25,8 @@ namespace MisturTee.Utils
             {
                 foreach (var route in routes[context.Request.Method])
                 {
-                    var templateMatcher = new TemplateMatcher(route.RouteTemplate, GetDefaults(route.RouteTemplate));
-                    var routeValues = GetDefaults(route.RouteTemplate);
+                    var templateMatcher = new TemplateMatcher(route.RouteTemplate, new RouteValueDictionary());
+                    var routeValues = new RouteValueDictionary();
                     if (templateMatcher.TryMatch(context.Request.Path, routeValues))
                     {
                         return new KeyValuePair<RouteDefinition, RouteValueDictionary>(route.ToRouteDefinition(),
@@ -36,19 +36,7 @@ namespace MisturTee.Utils
             }
             return new KeyValuePair<RouteDefinition, RouteValueDictionary>(null, null);
         }
-
-        public static RouteValueDictionary GetDefaults(RouteTemplate parsedTemplate)
-        {
-            var result = new RouteValueDictionary();
-
-            foreach (var parameter in parsedTemplate.Parameters.Where(x => x.DefaultValue != null))
-            {
-                result.Add(parameter.Name, parameter.DefaultValue);
-            }
-
-            return result;
-        }
-
+        
         internal static Dictionary<string, List<InternalRouteDefinition>> GetValidRouteDefs(
             IEnumerable<IRouteDefinitions> routeDefs)
         {

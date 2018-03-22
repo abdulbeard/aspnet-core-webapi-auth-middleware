@@ -9,3 +9,14 @@ C:\Users\az185030\source\repos\TokenAuth\TokenAuth\obj\Debug\netcoreapp2.0\Token
 C:\Users\az185030\source\repos\TokenAuth\TokenAuth\obj\Debug\netcoreapp2.0\TokenAuth.AssemblyInfo.cs
 C:\Users\az185030\source\repos\TokenAuth\TokenAuth\obj\Debug\netcoreapp2.0\TokenAuth.dll
 C:\Users\az185030\source\repos\TokenAuth\TokenAuth\obj\Debug\netcoreapp2.0\TokenAuth.pdb
+C:\Github\aspnet-core-webapi-auth-middleware\TokenAuth\bin\Debug\netcoreapp2.0\TokenAuth.deps.json
+C:\Github\aspnet-core-webapi-auth-middleware\TokenAuth\bin\Debug\netcoreapp2.0\TokenAuth.runtimeconfig.json
+C:\Github\aspnet-core-webapi-auth-middleware\TokenAuth\bin\Debug\netcoreapp2.0\TokenAuth.runtimeconfig.dev.json
+C:\Github\aspnet-core-webapi-auth-middleware\TokenAuth\bin\Debug\netcoreapp2.0\TokenAuth.dll
+C:\Github\aspnet-core-webapi-auth-middleware\TokenAuth\bin\Debug\netcoreapp2.0\TokenAuth.pdb
+C:\Github\aspnet-core-webapi-auth-middleware\TokenAuth\obj\Debug\netcoreapp2.0\TokenAuth.csprojResolveAssemblyReference.cache
+C:\Github\aspnet-core-webapi-auth-middleware\TokenAuth\obj\Debug\netcoreapp2.0\TokenAuth.csproj.CoreCompileInputs.cache
+C:\Github\aspnet-core-webapi-auth-middleware\TokenAuth\obj\Debug\netcoreapp2.0\TokenAuth.AssemblyInfoInputs.cache
+C:\Github\aspnet-core-webapi-auth-middleware\TokenAuth\obj\Debug\netcoreapp2.0\TokenAuth.AssemblyInfo.cs
+C:\Github\aspnet-core-webapi-auth-middleware\TokenAuth\obj\Debug\netcoreapp2.0\TokenAuth.dll
+C:\Github\aspnet-core-webapi-auth-middleware\TokenAuth\obj\Debug\netcoreapp2.0\TokenAuth.pdb
