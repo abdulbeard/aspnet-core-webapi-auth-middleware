@@ -1,5 +1,4 @@
-﻿using MisturTee.Middleware;
-using System;
+﻿using System;
 using System.Reflection;
 
 namespace MisturTee.TestMeFool
@@ -16,6 +15,7 @@ namespace MisturTee.TestMeFool
             //CallPrivateVoidMethod(typeof(Sentinel));
         }
 
+        // ReSharper disable once UnusedMember.Local
         private static void CallPrivateVoidMethod(Type type)
         {
             var methodInfo = type
