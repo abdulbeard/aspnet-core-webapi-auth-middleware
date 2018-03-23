@@ -7,21 +7,21 @@ using MisturTee.Utils;
 
 namespace MisturTee.Repositories
 {
-    internal static class RoutesRepository
+    public class RoutesRepository
     {
-        private static Dictionary<string, List<InternalRouteDefinition>> _routes;
-        private static readonly object LockObject = new object();
-        private static readonly object RefreshLockObject = new object();
-        private static bool _useProvider;
-        private static IValidRouteDefinitionProvider _routeDefinitionProvider;
-        private static DateTime _lastRetrievedAt;
-        private static TimeSpan _refreshTimespan = TimeSpan.MinValue;
+        private Dictionary<string, List<InternalRouteDefinition>> _routes;
+        private readonly object LockObject = new object();
+        private readonly object RefreshLockObject = new object();
+        private bool _useProvider;
+        private IValidRouteDefinitionProvider _routeDefinitionProvider;
+        private DateTime _lastRetrievedAt;
+        private TimeSpan _refreshTimespan = TimeSpan.MinValue;
         private const int DefaultRefreshFrequencyInSeconds = 60;
 
 
         private const string AppSettingForRefreshFrequency = "MrT:RefreshFrequencyInSeconds";
 
-        internal static async Task<Dictionary<string, List<InternalRouteDefinition>>> GetRoutesAsync()
+        internal async Task<Dictionary<string, List<InternalRouteDefinition>>> GetRoutesAsync()
         {
             if (!_useProvider || _routeDefinitionProvider == null)
             {
@@ -41,7 +41,7 @@ namespace MisturTee.Repositories
             return _routes;
         }
 
-        private static void LoadRefreshTimestamp()
+        private void LoadRefreshTimestamp()
         {
             if (_refreshTimespan == TimeSpan.MinValue)
             {
@@ -53,7 +53,16 @@ namespace MisturTee.Repositories
             }
         }
 
-        internal static Task RegisterRoutesAsync(IEnumerable<IRouteDefinitions> routeDefs)
+        private void Reset()
+        {
+            _routes = new Dictionary<string, List<InternalRouteDefinition>>();
+            _useProvider = false;
+            _routeDefinitionProvider = null;
+            _lastRetrievedAt = DateTime.MinValue;
+            _refreshTimespan = TimeSpan.MinValue;
+        }
+
+        internal Task RegisterRoutesAsync(IEnumerable<IRouteDefinitions> routeDefs)
         {
             lock (LockObject)
             {
@@ -64,7 +73,7 @@ namespace MisturTee.Repositories
             return Task.CompletedTask;
         }
 
-        internal static Task RegisterRoutesAsync(IValidRouteDefinitionProvider routesDefinitionProvider)
+        internal Task RegisterRoutesAsync(IValidRouteDefinitionProvider routesDefinitionProvider)
         {
             lock (LockObject)
             {

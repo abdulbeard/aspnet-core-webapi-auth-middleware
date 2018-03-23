@@ -21,6 +21,7 @@ namespace MisturTee.TestMeFool.Utils
         [Fact]
         public void GetValidRouteDefsTest()
         {
+            TestingUtils.ResetRoutesRepository();
             var result = RoutesUtils.GetValidRouteDefs(new List<IRouteDefinitions>() { new Routes() });
             Assert.Equal(7, result.Keys.Count);
             Assert.Equal(2, result["PUT"].Count);
@@ -29,34 +30,38 @@ namespace MisturTee.TestMeFool.Utils
         [Fact]
         public void GetValidRouteDefsTest_InvalidRouteTemplate()
         {
+            TestingUtils.ResetRoutesRepository();
             try
             {
                 RoutesUtils.GetValidRouteDefs(new List<IRouteDefinitions>() { new InvalidRouteTemplateRoutes() });
-                Assert.True(false);
             }
             catch (Exception)
             {
-                // ignored
+                return;
             }
+            Assert.True(false);
         }
 
         [Fact]
         public void GetValidRouteDefsTest_NullRouteDefs()
         {
+            TestingUtils.ResetRoutesRepository();
             Assert.Equal(new Dictionary<string, List<InternalRouteDefinition>>(), RoutesUtils.GetValidRouteDefs(null));
         }
 
         [Fact]
         public void MatchRouteAsyncTest()
         {
-            RoutesRepository.RegisterRoutesAsync(new List<IRouteDefinitions>() { new SpecialRouteTemplateRoutes() }).Wait();
+            TestingUtils.ResetRoutesRepository();
+            var routesRepository = new RoutesRepository();
+            routesRepository.RegisterRoutesAsync(new List<IRouteDefinitions>() { new SpecialRouteTemplateRoutes() }).Wait();
             var httpContext = new DefaultHttpContext();
             var request = new DefaultHttpRequest(httpContext)
             {
                 Method = HttpMethod.Post.Method,
                 Path = "/v1/yolo/nolo/1"
             };
-            var result = RoutesUtils.MatchRouteAsync(httpContext).Result;
+            var result = RoutesUtils.MatchRouteAsync(httpContext, routesRepository).Result;
             Assert.NotNull(request);
             Assert.Equal(4, result.Key.ClaimsConfig.ExtractionConfigs.Count);
             Assert.Equal(1, result.Key.ClaimsConfig.ValidationConfigs.Count);
@@ -68,14 +73,16 @@ namespace MisturTee.TestMeFool.Utils
         [Fact]
         public void MatchRouteAsyncTest_NoMatch()
         {
-            RoutesRepository.RegisterRoutesAsync(new List<IRouteDefinitions>() { new SpecialRouteTemplateRoutes() }).Wait();
+            TestingUtils.ResetRoutesRepository();
+            var routesRepository = new RoutesRepository();
+            routesRepository.RegisterRoutesAsync(new List<IRouteDefinitions>() { new SpecialRouteTemplateRoutes() }).Wait();
             var httpContext = new DefaultHttpContext();
             var request = new DefaultHttpRequest(httpContext)
             {
                 Method = HttpMethod.Post.Method,
-                Path = "/v1/yolo/nolo/asdf"
+                Path = "/v1/yolo/nolo/asdf/kjlkjl"
             };
-            var result = RoutesUtils.MatchRouteAsync(httpContext).Result;
+            var result = RoutesUtils.MatchRouteAsync(httpContext, routesRepository).Result;
             Assert.NotNull(request);
             Assert.Null(result.Key);
             Assert.Null(result.Value);
@@ -84,14 +91,16 @@ namespace MisturTee.TestMeFool.Utils
         [Fact]
         public void GetMatchingRouteTest()
         {
-            RoutesRepository.RegisterRoutesAsync(new List<IRouteDefinitions>() { new SpecialRouteTemplateRoutes() }).Wait();
+            TestingUtils.ResetRoutesRepository();
+            var routesRepository = new RoutesRepository();
+            routesRepository.RegisterRoutesAsync(new List<IRouteDefinitions>() { new SpecialRouteTemplateRoutes() }).Wait();
             var httpContext = new DefaultHttpContext();
             var request = new DefaultHttpRequest(httpContext)
             {
                 Method = HttpMethod.Post.Method,
                 Path = "/v1/yolo/nolo/1"
             };
-            var result = RoutesUtils.GetMatchingRoute(httpContext).Result;
+            var result = RoutesUtils.GetMatchingRoute(httpContext, routesRepository).Result;
             Assert.NotNull(request);
             Assert.Equal(4, result.Route.ClaimsConfig.ExtractionConfigs.Count);
             Assert.Equal(1, result.Route.ClaimsConfig.ValidationConfigs.Count);
@@ -102,14 +111,16 @@ namespace MisturTee.TestMeFool.Utils
         [Fact]
         public void GetMatchingRouteTest_NoMatch()
         {
-            RoutesRepository.RegisterRoutesAsync(new List<IRouteDefinitions>() { new SpecialRouteTemplateRoutes() }).Wait();
+            TestingUtils.ResetRoutesRepository();
+            var routesRepository = new RoutesRepository();
+            routesRepository.RegisterRoutesAsync(new List<IRouteDefinitions>() { new SpecialRouteTemplateRoutes() }).Wait();
             var httpContext = new DefaultHttpContext();
             var request = new DefaultHttpRequest(httpContext)
             {
                 Method = HttpMethod.Post.Method,
                 Path = "/v1/yolo/nolo/asdf"
             };
-            var result = RoutesUtils.GetMatchingRoute(httpContext).Result;
+            var result = RoutesUtils.GetMatchingRoute(httpContext, routesRepository).Result;
             Assert.NotNull(request);
             Assert.NotNull(result.Route);
             Assert.NotNull(result.RouteValues);

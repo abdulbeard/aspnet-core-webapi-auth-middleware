@@ -11,19 +11,19 @@ namespace MisturTee.Middleware
     public static class MiddlewareExtensions
     {
         public static async Task<IApplicationBuilder> UseCustomClaimsValidationAsync(this IApplicationBuilder app,
-            IEnumerable<IRouteDefinitions> routeDefs,
+            IEnumerable<IRouteDefinitions> routeDefs, RoutesRepository routesRepository,
             ClaimValidatorDelegate claimsValidator = null)
         {
-            await RoutesRepository.RegisterRoutesAsync(routeDefs).ConfigureAwait(false);
+            await routesRepository.RegisterRoutesAsync(routeDefs).ConfigureAwait(false);
             Sentinel.RegisterValidationDelegate(claimsValidator);
             return app.UseMiddleware<Sentinel>();
         }
 
         public static async Task<IApplicationBuilder> UseCustomClaimsValidationAsync(this IApplicationBuilder app,
-            IValidRouteDefinitionProvider validRouteDefinitionProvider,
+            IValidRouteDefinitionProvider validRouteDefinitionProvider, RoutesRepository routesRepository,
             ClaimValidatorDelegate claimsValidator = null)
         {
-            await RoutesRepository.RegisterRoutesAsync(validRouteDefinitionProvider).ConfigureAwait(false);
+            await routesRepository.RegisterRoutesAsync(validRouteDefinitionProvider).ConfigureAwait(false);
             Sentinel.RegisterValidationDelegate(claimsValidator);
             return app.UseMiddleware<Sentinel>();
         }

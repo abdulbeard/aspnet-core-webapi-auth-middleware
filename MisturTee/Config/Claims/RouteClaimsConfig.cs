@@ -28,6 +28,7 @@ namespace MisturTee.Config.Claims
             response.ErrorCode = 1235;
             response.Message = "The following claims require values";
             Response = response;
+            Headers = new HeaderDictionary();
         }
         public HeaderDictionary Headers { get; set; }
         public HttpStatusCode HttpStatusCode { get; set; }

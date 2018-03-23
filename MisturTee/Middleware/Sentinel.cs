@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using MisturTee.Repositories;
 using MisturTee.Utils;
 using static MisturTee.Config.Claims.ClaimValidationConfig;
 
@@ -9,10 +10,12 @@ namespace MisturTee.Middleware
     {
         private readonly RequestDelegate _next;
         private static ClaimValidatorDelegate _validationDelegate;
+        private readonly RoutesRepository _routesRepository;
 
-        public Sentinel(RequestDelegate next)
+        public Sentinel(RequestDelegate next, RoutesRepository routesRepository)
         {
             _next = next;
+            _routesRepository = routesRepository;
         }
 
         internal static void RegisterValidationDelegate(ClaimValidatorDelegate func)
@@ -31,11 +34,11 @@ namespace MisturTee.Middleware
             }
             else
             {
-                var matchedRouteResult = await RoutesUtils.MatchRouteAsync(context).ConfigureAwait(false);
+                var matchedRouteResult = await RoutesUtils.MatchRouteAsync(context, _routesRepository).ConfigureAwait(false);
                 if (matchedRouteResult.Key != null)
                 {
                     if (!await ValidationUtils
-                        .InternalValidateClaimsAsync(matchedRouteResult.Key, context, matchedRouteResult.Value)
+                        .ValidateClaimsAsync(matchedRouteResult.Key, context, matchedRouteResult.Value)
                         .ConfigureAwait(false))
                     {
                         return;
@@ -44,6 +47,11 @@ namespace MisturTee.Middleware
             }
 
             await _next(context).ConfigureAwait(false);
+        }
+
+        private static void Reset()
+        {
+            _validationDelegate = null;
         }
     }
 }

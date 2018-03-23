@@ -107,7 +107,7 @@ namespace MisturTee.TestMeFool.Utils
                         ContentType = "application/json",
                         ContentLength = requestBytes.Length
                     },
-                    new RouteValueDictionary() {{"culpritId", "12345"}}
+                    new RouteValueDictionary() {{"culpritId", "12345"}}, null
                 });
             Assert.Equal("{'IAm':'AFool', 'YouAreNotAFool':true}", result);
         }
@@ -136,7 +136,7 @@ namespace MisturTee.TestMeFool.Utils
                         ContentType = "application/json",
                         ContentLength = requestBytes.Length
                     },
-                    new RouteValueDictionary() {{"culpritId", "12345"}}
+                    new RouteValueDictionary() {{"culpritId", "12345"}}, null
                 });
             Assert.Equal(string.Empty, result);
         }
@@ -167,7 +167,7 @@ namespace MisturTee.TestMeFool.Utils
                         ContentType = "application/json",
                         ContentLength = requestBytes.Length
                     },
-                    new RouteValueDictionary() {{"culpritId", "12345"}}
+                    new RouteValueDictionary() {{"culpritId", "12345"}}, null
                 });
             Assert.Equal(
                 "[{\"Key\":\"Authorization\",\"Value\":[\"Bearer hollaaaaaa\"]},{\"Key\":\"x-access-token\",\"Value\":[\"just kidding\"]},{\"Key\":\"Content-Type\",\"Value\":[\"application/json\"]},{\"Key\":\"Content-Length\",\"Value\":[\"38\"]}]",
@@ -200,7 +200,7 @@ namespace MisturTee.TestMeFool.Utils
                         ContentType = "application/json",
                         ContentLength = requestBytes.Length
                     },
-                    null
+                    null, null
                 });
             Assert.Equal(string.Empty, result);
         }
@@ -231,7 +231,7 @@ namespace MisturTee.TestMeFool.Utils
                         ContentType = "application/json",
                         ContentLength = requestBytes.Length
                     },
-                    new RouteValueDictionary() {{"culpritId", "12345"}, {"whodat", "itsme"}}
+                    new RouteValueDictionary() {{"culpritId", "12345"}, {"whodat", "itsme"}}, null
                 });
             Assert.Equal("[{\"Key\":\"culpritId\",\"Value\":[\"12345\"]},{\"Key\":\"whodat\",\"Value\":[\"itsme\"]}]", result);
         }
@@ -262,7 +262,7 @@ namespace MisturTee.TestMeFool.Utils
                         ContentType = "application/json",
                         ContentLength = requestBytes.Length
                     },
-                    new RouteValueDictionary() {{"culpritId", "12345"}}
+                    new RouteValueDictionary() {{"culpritId", "12345"}}, null
                 });
             Assert.Equal("/yolo/solo/nolo/12345", result);
         }
@@ -293,7 +293,7 @@ namespace MisturTee.TestMeFool.Utils
                         ContentType = "application/json",
                         ContentLength = requestBytes.Length
                     },
-                    new RouteValueDictionary() {{"culpritId", "12345"}}
+                    new RouteValueDictionary() {{"culpritId", "12345"}}, null
                 });
             Assert.Equal(string.Empty, result);
         }
@@ -329,7 +329,7 @@ namespace MisturTee.TestMeFool.Utils
                         ContentType = "application/json",
                         ContentLength = requestBytes.Length
                     },
-                    new RouteValueDictionary() {{"culpritId", "12345"}}
+                    new RouteValueDictionary() {{"culpritId", "12345"}}, null
                 });
             Assert.Equal("[{\"Key\":\"areYou\",\"Value\":[\"YesIAm\"]},{\"Key\":\"spitItAllOut\",\"Value\":[\"YES\"]}]", result);
         }
@@ -365,7 +365,7 @@ namespace MisturTee.TestMeFool.Utils
                         ContentType = "application/json",
                         ContentLength = requestBytes.Length
                     },
-                    new RouteValueDictionary() {{"culpritId", "12345"}}
+                    new RouteValueDictionary() {{"culpritId", "12345"}}, null
                 });
             Assert.Equal("?areYou=YesIAm&spitItAllOut=YES", result);
         }
@@ -401,7 +401,7 @@ namespace MisturTee.TestMeFool.Utils
                         ContentType = "application/json",
                         ContentLength = requestBytes.Length
                     },
-                    new RouteValueDictionary() {{"culpritId", "12345"}}
+                    new RouteValueDictionary() {{"culpritId", "12345"}}, null
                 });
             Assert.Equal(string.Empty, result);
         }
@@ -437,7 +437,7 @@ namespace MisturTee.TestMeFool.Utils
                         ContentType = "application/json",
                         ContentLength = requestBytes.Length
                     },
-                    new RouteValueDictionary() {{"culpritId", "12345"}}
+                    new RouteValueDictionary() {{"culpritId", "12345"}}, null
                 });
             Assert.Equal(string.Empty, result);
         }

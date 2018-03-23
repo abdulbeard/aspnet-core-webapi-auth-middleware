@@ -26,12 +26,14 @@ namespace MisturTee.TestMeFool.Repositories
         [Fact]
         public void RegisterRoutesAsyncTest_ByRouteDefinitions()
         {
-            RoutesRepository.RegisterRoutesAsync(new List<IRouteDefinitions>() {new AnotherRoutes()}).Wait();
-            var useProvider = GetPrivateValueFromRoutesRepository<bool>("_useProvider");
-            var routeProvider = GetPrivateValueFromRoutesRepository<IValidRouteDefinitionProvider>("_routeDefinitionProvider");
+            TestingUtils.ResetRoutesRepository();
+            var routesRepository = new RoutesRepository();
+            routesRepository.RegisterRoutesAsync(new List<IRouteDefinitions>() {new AnotherRoutes()}).Wait();
+            var useProvider = GetPrivateValueFromRoutesRepository<bool>("_useProvider", routesRepository);
+            var routeProvider = GetPrivateValueFromRoutesRepository<IValidRouteDefinitionProvider>("_routeDefinitionProvider", routesRepository);
             Assert.False(useProvider);
             Assert.Null(routeProvider);
-            var routes = RoutesRepository.GetRoutesAsync();
+            var routes = routesRepository.GetRoutesAsync();
             Assert.Equal(2, routes.Result.Values.First().Count);
             Assert.Equal(HttpMethod.Put, routes.Result.Values.First().First().Method);
             Assert.Equal(HttpMethod.Put, routes.Result.Values.First().ElementAt(1).Method);
@@ -40,25 +42,25 @@ namespace MisturTee.TestMeFool.Repositories
         [Fact]
         public void RegisterRoutesAsyncTest_ByRouteProvider()
         {
-            RoutesRepository.RegisterRoutesAsync(new ValidRouteProvider()).Wait();
-            var useProvider = GetPrivateValueFromRoutesRepository<bool>("_useProvider");
-            var routeProvider = GetPrivateValueFromRoutesRepository<IValidRouteDefinitionProvider>("_routeDefinitionProvider");
-            var refreshTimespan = GetPrivateValueFromRoutesRepository<TimeSpan>("_refreshTimespan");
+            TestingUtils.ResetRoutesRepository();
+            var routesRepository = new RoutesRepository();
+            routesRepository.RegisterRoutesAsync(new ValidRouteProvider()).Wait();
+            var useProvider = GetPrivateValueFromRoutesRepository<bool>("_useProvider", routesRepository);
+            var routeProvider = GetPrivateValueFromRoutesRepository<IValidRouteDefinitionProvider>("_routeDefinitionProvider", routesRepository);
+            var refreshTimespan = GetPrivateValueFromRoutesRepository<TimeSpan>("_refreshTimespan", routesRepository);
             Assert.Equal(TimeSpan.MinValue, refreshTimespan);
             Assert.True(useProvider);
             Assert.NotNull(routeProvider);
-            var routes = RoutesRepository.GetRoutesAsync();
-            Assert.Single(routes.Result.Values);
-            Assert.Equal(HttpMethod.Post, routes.Result.Values.First().First().Method);
-            Assert.Single(routes.Result.Values.First());
-
-
+            var routes = routesRepository.GetRoutesAsync().Result;
+            Assert.Single(routes.Values);
+            Assert.Equal(HttpMethod.Post, routes.Values.First().First().Method);
+            Assert.Single(routes.Values.First());
         }
 
-        private static T GetPrivateValueFromRoutesRepository<T>(string fieldName)
+        private static T GetPrivateValueFromRoutesRepository<T>(string fieldName, RoutesRepository routesRepository)
         {
-            var fieldInfo = typeof(RoutesRepository).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static);
-            return (T) fieldInfo.GetValue(fieldInfo);
+            var fieldInfo = typeof(RoutesRepository).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+            return (T) fieldInfo.GetValue(routesRepository);
         }
     }
 

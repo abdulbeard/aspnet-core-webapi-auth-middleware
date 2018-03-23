@@ -19,6 +19,7 @@ namespace MisturTee.Utils
         {
             var dict = new Dictionary<ClaimLocation, Dictionary<ExtractionType, string>>();
             var taskClaims = new List<Task<Claim>>();
+            var requestBodyString = string.Empty;
 
             foreach (var extractionConfig in routeDef.ClaimsConfig?.ExtractionConfigs ?? new List<IValidClaimsExtractionConfig>())
             {
@@ -36,8 +37,13 @@ namespace MisturTee.Utils
 
                 if (string.IsNullOrEmpty(dict[extractionConfig.ClaimLocation][extractionConfig.ExtractionType]))
                 {
+                    if (extractionConfig.ClaimLocation == ClaimLocation.Body && string.IsNullOrEmpty(requestBodyString))
+                    {
+                        requestBodyString = GetContent(extractionConfig.ClaimLocation, extractionConfig.ExtractionType, req, routeValues);
+                    }
+
                     dict[extractionConfig.ClaimLocation][extractionConfig.ExtractionType] = GetContent(
-                        extractionConfig.ClaimLocation, extractionConfig.ExtractionType, req, routeValues);
+                        extractionConfig.ClaimLocation, extractionConfig.ExtractionType, req, routeValues, requestBodyString);
                 }
                 taskClaims.Add(extractionConfig.GetClaimAsync(dict[extractionConfig.ClaimLocation][extractionConfig.ExtractionType]));
             }
@@ -45,14 +51,21 @@ namespace MisturTee.Utils
             return (await Task.WhenAll(taskClaims).ConfigureAwait(false)).ToList();
         }
 
-        private static string GetContent(ClaimLocation location, ExtractionType extType, HttpRequest req, RouteValueDictionary routeValues)
+        private static string GetContent(ClaimLocation location, ExtractionType extType, HttpRequest req, RouteValueDictionary routeValues, string requestBodyString = "")
         {
             switch (location)
             {
                 case ClaimLocation.Body:
                     {
+                        if (!string.IsNullOrEmpty(requestBodyString))
+                        {
+                            return requestBodyString;
+                        }
                         var bodyMemStream = new MemoryStream();
-                        req.Body.Position = 0;
+                        if (req.Body.CanSeek)
+                        {
+                            req.Body.Position = 0;
+                        }
                         req.Body.CopyTo(bodyMemStream);
                         var stringBody = System.Text.Encoding.UTF8.GetString(bodyMemStream.ToArray());
                         return stringBody;

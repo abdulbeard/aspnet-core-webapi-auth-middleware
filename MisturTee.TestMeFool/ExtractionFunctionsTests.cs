@@ -28,12 +28,12 @@ namespace MisturTee.TestMeFool
             try
             {
                 ExtractionFunctions.JsonPathFunc(json, jsonPath).Wait();
-                Assert.True(false);
             }
             catch (Exception)
             {
-                // ignored
+                return;
             }
+            Assert.True(false);
         }
 
         [Fact]
@@ -56,16 +56,7 @@ namespace MisturTee.TestMeFool
         [Fact]
         public void KeyValueExtractionFunctionTest_Null()
         {
-            var key = "Authorization";
-            try
-            {
-                ExtractionFunctions.KeyValueFunc(null, key).Wait();
-                Assert.True(false);
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
+            Assert.Equal(string.Empty, ExtractionFunctions.KeyValueFunc(null, "Authorization").Result);
         }
 
         [Fact]

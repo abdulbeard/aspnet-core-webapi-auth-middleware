@@ -15,7 +15,7 @@ namespace MisturTee.TestMeFool.Middleware
         public void UseCustomClaimsValidationAsync_RouteDefinitions()
         {
             var applicationBuilder = new ApplicationBuilder(new ServiceContainer());
-            var appBuilder = applicationBuilder.UseCustomClaimsValidationAsync(new List<IRouteDefinitions>())
+            var appBuilder = applicationBuilder.UseCustomClaimsValidationAsync(new List<IRouteDefinitions>(), new MisturTee.Repositories.RoutesRepository())
                 .Result;
             Assert.NotNull(appBuilder);
         }
@@ -26,7 +26,7 @@ namespace MisturTee.TestMeFool.Middleware
         {
             var applicationBuilder = new ApplicationBuilder(new ServiceContainer());
             var appBuilder = applicationBuilder
-                .UseCustomClaimsValidationAsync(new TestValidRouteDefinitionProvider()).Result;
+                .UseCustomClaimsValidationAsync(new TestValidRouteDefinitionProvider(), new MisturTee.Repositories.RoutesRepository()).Result;
             Assert.NotNull(appBuilder);
         }
 
