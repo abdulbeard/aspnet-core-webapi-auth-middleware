@@ -206,8 +206,8 @@ namespace MisturTee.TestMeFool.Claims
         public void TypeExtraction()
         {
             const string claimName = "PityTheFoolClaim";
-            Task<string> extractionFunc(TestingType testingType) => Task.FromResult(testingType.No);
-            var config = new ValidTypeClaimExtractionConfig<TestingType>(extractionFunc, claimName, ClaimLocation.Body);
+            Task<string> ExtractionFunc(TestingType testingType) => Task.FromResult(testingType.No);
+            var config = new ValidTypeClaimExtractionConfig<TestingType>(ExtractionFunc, claimName, ClaimLocation.Body);
             Assert.True(config.ClaimLocation.Equals(ClaimLocation.Body));
             Assert.True(config.ExtractionType.Equals(ExtractionType.Type));
             var instance = new TestingType() {Yo = "lo", No = "lo"};
@@ -235,8 +235,8 @@ namespace MisturTee.TestMeFool.Claims
         public void TypeExtraction_NullEntity()
         {
             const string claimName = "PityTheFoolClaim";
-            Task<string> extractionFunc(TestingType testingType) => Task.FromResult(testingType.No);
-            var config = new ValidTypeClaimExtractionConfig<TestingType>(extractionFunc, claimName, ClaimLocation.Body);
+            Task<string> ExtractionFunc(TestingType testingType) => Task.FromResult(testingType.No);
+            var config = new ValidTypeClaimExtractionConfig<TestingType>(ExtractionFunc, claimName, ClaimLocation.Body);
             Assert.True(config.ClaimLocation.Equals(ClaimLocation.Body));
             Assert.True(config.ExtractionType.Equals(ExtractionType.Type));
             try

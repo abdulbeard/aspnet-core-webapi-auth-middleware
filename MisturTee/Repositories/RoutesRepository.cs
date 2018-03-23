@@ -10,8 +10,8 @@ namespace MisturTee.Repositories
     public class RoutesRepository
     {
         private Dictionary<string, List<InternalRouteDefinition>> _routes;
-        private readonly object LockObject = new object();
-        private readonly object RefreshLockObject = new object();
+        private readonly object _lockObject = new object();
+        private readonly object _refreshLockObject = new object();
         private bool _useProvider;
         private IValidRouteDefinitionProvider _routeDefinitionProvider;
         private DateTime _lastRetrievedAt;
@@ -32,7 +32,7 @@ namespace MisturTee.Repositories
             {
                 var routes = await _routeDefinitionProvider.GetAsync().ConfigureAwait(false);
                 var routesDict = RoutesUtils.GetValidRouteDefs(routes);
-                lock (RefreshLockObject)
+                lock (_refreshLockObject)
                 {
                     _routes = routesDict;
                     _lastRetrievedAt = DateTime.Now;
@@ -53,18 +53,9 @@ namespace MisturTee.Repositories
             }
         }
 
-        private void Reset()
-        {
-            _routes = new Dictionary<string, List<InternalRouteDefinition>>();
-            _useProvider = false;
-            _routeDefinitionProvider = null;
-            _lastRetrievedAt = DateTime.MinValue;
-            _refreshTimespan = TimeSpan.MinValue;
-        }
-
         internal Task RegisterRoutesAsync(IEnumerable<IRouteDefinitions> routeDefs)
         {
-            lock (LockObject)
+            lock (_lockObject)
             {
                 _routes = RoutesUtils.GetValidRouteDefs(routeDefs);
                 _routeDefinitionProvider = null;
@@ -75,7 +66,7 @@ namespace MisturTee.Repositories
 
         internal Task RegisterRoutesAsync(IValidRouteDefinitionProvider routesDefinitionProvider)
         {
-            lock (LockObject)
+            lock (_lockObject)
             {
                 _routeDefinitionProvider = routesDefinitionProvider;
                 _useProvider = true;

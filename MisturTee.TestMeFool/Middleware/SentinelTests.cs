@@ -14,7 +14,6 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using static MisturTee.Config.Claims.ClaimValidationConfig;
@@ -31,6 +30,7 @@ namespace MisturTee.TestMeFool.Middleware
             Sentinel.RegisterValidationDelegate(failingClaimValidationDelegate);
             var httpContext = new DefaultHttpContext();
             var result = sentinel.Invoke(httpContext);
+            Assert.NotNull(result);
             Assert.Equal((int)HttpStatusCode.BadRequest, httpContext.Response.StatusCode);
         }
 
@@ -42,6 +42,7 @@ namespace MisturTee.TestMeFool.Middleware
             Sentinel.RegisterValidationDelegate(claimValidationDelegate);
             var httpContext = new DefaultHttpContext();
             var result = sentinel.Invoke(httpContext);
+            Assert.NotNull(result);
             Assert.Equal((int)HttpStatusCode.Created, httpContext.Response.StatusCode);
         }
 
@@ -72,6 +73,7 @@ namespace MisturTee.TestMeFool.Middleware
             var sentinel = new Sentinel(reqDelegate, routesRepository);
             var result = sentinel.Invoke(httpContext);
             Assert.NotNull(result);
+            Assert.NotNull(request);
             Assert.Equal((int)HttpStatusCode.Created, httpContext.Response.StatusCode);
         }
 
@@ -101,6 +103,8 @@ namespace MisturTee.TestMeFool.Middleware
             });
             var sentinel = new Sentinel(reqDelegate, routesRepository);
             var result = sentinel.Invoke(httpContext);
+            Assert.NotNull(request);
+            Assert.NotNull(result);
             Assert.Equal((int)HttpStatusCode.Created, httpContext.Response.StatusCode);
         }
 
@@ -164,7 +168,7 @@ namespace MisturTee.TestMeFool.Middleware
                         },
                         BadRequestResponse = new BadRequestResponse
                         {
-                            HttpStatusCode = System.Net.HttpStatusCode.Forbidden,
+                            HttpStatusCode = HttpStatusCode.Forbidden,
                             BadRequestResponseOverride = null,
                         }
                     }

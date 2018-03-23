@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TokenAuth", "TokenAuth\Toke
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MisturTee", "MisturTee\MisturTee.csproj", "{C14AD67C-29FC-46A2-B7D8-622AED5C44D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MisturTee.TestMeFool", "MisturTee.TestMeFool\MisturTee.TestMeFool.csproj", "{A3404A4A-BDBA-42A9-AF55-FC96EABB8E5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MisturTee.TestMeFool", "MisturTee.TestMeFool\MisturTee.TestMeFool.csproj", "{A3404A4A-BDBA-42A9-AF55-FC96EABB8E5F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{39B7C217-C6D4-4885-B8F7-7FF59A2DAB01}"
+	ProjectSection(SolutionItems) = preProject
+		CodeCoverage.runsettings = CodeCoverage.runsettings
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

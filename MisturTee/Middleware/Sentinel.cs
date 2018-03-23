@@ -48,10 +48,5 @@ namespace MisturTee.Middleware
 
             await _next(context).ConfigureAwait(false);
         }
-
-        private static void Reset()
-        {
-            _validationDelegate = null;
-        }
     }
 }
