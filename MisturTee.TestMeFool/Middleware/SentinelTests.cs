@@ -71,7 +71,7 @@ namespace MisturTee.TestMeFool.Middleware
             });
             var sentinel = new Sentinel(reqDelegate, routesRepository);
             var result = sentinel.Invoke(httpContext);
-            System.IO.File.WriteAllText(@"C:\users\abdulbeard\testResults.txt", new StreamReader(httpContext.Response.Body).ReadToEnd());
+            Assert.NotNull(result);
             Assert.Equal((int)HttpStatusCode.Created, httpContext.Response.StatusCode);
         }
 
