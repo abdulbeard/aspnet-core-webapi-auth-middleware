@@ -12,6 +12,27 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{39B7C217-C6D4-4885-B8F7-7FF59A2DAB01}"
 	ProjectSection(SolutionItems) = preProject
 		CodeCoverage.runsettings = CodeCoverage.runsettings
+		BuildTools\OpenCoverToCoberturaConverter.exe = BuildTools\OpenCoverToCoberturaConverter.exe
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenCover", "OpenCover", "{4C476611-B9B7-446C-A0C9-83F47BA01216}"
+	ProjectSection(SolutionItems) = preProject
+		BuildTools\OpenCover\Autofac.Configuration.dll = BuildTools\OpenCover\Autofac.Configuration.dll
+		BuildTools\OpenCover\Autofac.dll = BuildTools\OpenCover\Autofac.dll
+		BuildTools\OpenCover\CrashReporter.NET.dll = BuildTools\OpenCover\CrashReporter.NET.dll
+		BuildTools\OpenCover\Gendarme.Framework.dll = BuildTools\OpenCover\Gendarme.Framework.dll
+		BuildTools\OpenCover\Gendarme.Rules.Maintainability.dll = BuildTools\OpenCover\Gendarme.Rules.Maintainability.dll
+		BuildTools\OpenCover\log4net.dll = BuildTools\OpenCover\log4net.dll
+		BuildTools\OpenCover\Mono.Cecil.dll = BuildTools\OpenCover\Mono.Cecil.dll
+		BuildTools\OpenCover\Mono.Cecil.Mdb.dll = BuildTools\OpenCover\Mono.Cecil.Mdb.dll
+		BuildTools\OpenCover\Mono.Cecil.Pdb.dll = BuildTools\OpenCover\Mono.Cecil.Pdb.dll
+		BuildTools\OpenCover\OpenCover.Console.exe = BuildTools\OpenCover\OpenCover.Console.exe
+		BuildTools\OpenCover\OpenCover.Console.exe.config = BuildTools\OpenCover\OpenCover.Console.exe.config
+		BuildTools\OpenCover\OpenCover.Console.pdb = BuildTools\OpenCover\OpenCover.Console.pdb
+		BuildTools\OpenCover\OpenCover.Extensions.dll = BuildTools\OpenCover\OpenCover.Extensions.dll
+		BuildTools\OpenCover\OpenCover.Extensions.pdb = BuildTools\OpenCover\OpenCover.Extensions.pdb
+		BuildTools\OpenCover\OpenCover.Framework.dll = BuildTools\OpenCover\OpenCover.Framework.dll
+		BuildTools\OpenCover\OpenCover.Framework.pdb = BuildTools\OpenCover\OpenCover.Framework.pdb
 	EndProjectSection
 EndProject
 Global
@@ -35,6 +56,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4C476611-B9B7-446C-A0C9-83F47BA01216} = {39B7C217-C6D4-4885-B8F7-7FF59A2DAB01}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA741DC3-2471-4CED-A989-EBDF5484E001}
