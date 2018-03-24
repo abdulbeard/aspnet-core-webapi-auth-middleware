@@ -21,6 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenCover", "OpenCover", "{
 	ProjectSection(SolutionItems) = preProject
 		BuildTools\OpenCover\Autofac.Configuration.dll = BuildTools\OpenCover\Autofac.Configuration.dll
 		BuildTools\OpenCover\Autofac.dll = BuildTools\OpenCover\Autofac.dll
+		BuildTools\CodeCoverage.ps1 = BuildTools\CodeCoverage.ps1
 		BuildTools\OpenCover\CrashReporter.NET.dll = BuildTools\OpenCover\CrashReporter.NET.dll
 		BuildTools\OpenCover\Gendarme.Framework.dll = BuildTools\OpenCover\Gendarme.Framework.dll
 		BuildTools\OpenCover\Gendarme.Rules.Maintainability.dll = BuildTools\OpenCover\Gendarme.Rules.Maintainability.dll
