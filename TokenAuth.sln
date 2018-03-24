@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{39B7C217-C6D4-4885-B8F7-7FF59A2DAB01}"
 	ProjectSection(SolutionItems) = preProject
 		CodeCoverage.runsettings = CodeCoverage.runsettings
+		BuildTools\CodeCoverage.ps1 = BuildTools\CodeCoverage.ps1
 		BuildTools\OpenCoverToCoberturaConverter.exe = BuildTools\OpenCoverToCoberturaConverter.exe
 	EndProjectSection
 EndProject
