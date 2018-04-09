@@ -25,6 +25,7 @@ function writeTestResultsJson {
 			TestsFailed= $matches.Groups[3].Value
 			TestsSkipped= $matches.Groups[4].Value
             ExecutionTime=$testsRunTime
+            TestsPercentage= $matches.Groups[2].Value+"/"+$matches.Groups[1].Value
 		} | ConvertTo-Json
 		Set-Content .\Reports\UnitTestsSummary.json $json
         Log("Done with 'Write Test Results Json'", "info")

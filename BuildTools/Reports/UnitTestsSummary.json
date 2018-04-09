@@ -2,7 +2,8 @@
     "TestsPassed":  "90",
     "TestsPassing":  true,
     "TotalTests":  "90",
-    "ExecutionTime":  "1.7909 Seconds",
+    "ExecutionTime":  "1.6005 Seconds",
+    "TestsPercentage":  "90/90",
     "TestsSkipped":  "0",
     "TestsFailed":  "0"
 }
