@@ -6,6 +6,13 @@ asp.net core 2.0 webapi with authentication and authorization middleware with co
 <p align="center">
 <img src="https://github.com/abdulbeard/aspnet-core-webapi-auth-middleware/blob/master/BuildTools/Reports/badge_combined.svg" type="image/svg+xml"/>
 
-<img src="https://img.shields.io/badge/dynamic/json.svg?label=Tests&url=https%3A%2F%2Fraw.githubusercontent.com%2Fabdulbeard%2Faspnet-core-webapi-auth-middleware%2Fmaster%2FBuildTools%2FReports%2FUnitTestsSummary.json&query=%24.TestsPassed&colorB=1fef00" />
+<a href="https://raw.githubusercontent.com/abdulbeard/aspnet-core-webapi-auth-middleware/master/BuildTools/Reports/UnitTestsSummary.json" target="_blank">
+<img src="https://img.shields.io/badge/dynamic/json.svg?label=Tests&url=https%3A%2F%2Fraw.githubusercontent.com%2Fabdulbeard%2Faspnet-core-webapi-auth-middleware%2Fmaster%2FBuildTools%2FReports%2FUnitTestsSummary.json&query=%24.TestsPercentage&colorB=58C52A&suffix=%20Passing" />
+</a>
+
+<a href="https://raw.githubusercontent.com/abdulbeard/aspnet-core-webapi-auth-middleware/master/BuildTools/Reports/UnitTestsSummary.json" target="_blank">
+<img src="https://img.shields.io/badge/Build-Passing-brightgreen.svg" />
+</a>
 </p>
+
 
