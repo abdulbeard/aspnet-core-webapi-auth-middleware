@@ -298,3 +298,14 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+TokenAuth/obj/Debug/netcoreapp2.0/TokenAuth.csproj.FileListAbsolute.txt
+TokenAuth/bin/Debug/netcoreapp2.0/TokenAuth.dll
+TokenAuth/bin/Debug/netcoreapp2.0/TokenAuth.pdb
+TokenAuth/bin/Debug/netcoreapp2.0/TokenAuth.deps.json
+TokenAuth/obj/TokenAuth.csproj.nuget.cache
+TokenAuth/obj/TokenAuth.csproj.nuget.g.props
+TokenAuth/obj/project.assets.json
+TokenAuth/obj/Debug/netcoreapp2.0/TokenAuth.dll
+TokenAuth/obj/Debug/netcoreapp2.0/TokenAuth.pdb
+TokenAuth/obj/Debug/netcoreapp2.0/TokenAuth.AssemblyInfo.cs
+TokenAuth/obj/Debug/netcoreapp2.0/TokenAuth.csprojResolveAssemblyReference.cache
