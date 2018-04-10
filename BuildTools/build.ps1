@@ -4,6 +4,7 @@ param(
 $testOutput = ""
 $solutionPath = "..\TokenAuth.sln"
 $dotnetExePath = "C:\Program Files\dotnet\dotnet.exe"
+$pathToOpenCoverExe = (Get-Location).Path + "\OpenCover"
 function test {
 	if(proceed){
         Log("Executing 'test'", "info")
