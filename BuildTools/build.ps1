@@ -17,18 +17,32 @@ function test {
 function writeTestResultsJson {
 	if(proceed){
         Log("Executing 'Write Test Results Json'", "info")
-		$matches = ($testOutput | Select-String -Pattern "^Total tests: (.*). Passed: (.*). Failed: (.*). Skipped: (.*).$").Matches
+        $testsPassed = 0;
+        $totalTests = 0;
+        $testsFailed = 0;
+        $testsSkipped = 0;
+        $testsRunTime = 0.0;
+        foreach($testResult in ($testOutput | Select-String -Pattern "^Total tests: (.*). Passed: (.*). Failed: (.*). Skipped: (.*).$" -AllMatches)){
+            Write-Host $testResult
+            $totalTests += $testResult.Matches.Groups[1].Value
+            $testsPassed += $testResult.Matches.Groups[2].Value
+            $testsFailed += $testResult.Matches.Groups[3].Value
+            $testsSkipped += $testResult.Matches.Groups[4].Value
+        }
+        $allTestsPassed = $testsPassed -eq $totalTests;
+
+        foreach($runtime in ($testOutput | Select-String -Pattern "Test execution time: (.*) Seconds" -AllMatches)){
+            $testsRunTime += [double] $runtime.Matches.Groups[1].Value
+        }
         Log($matches, "debug")
-		$testsSuccess = ($testOutput | Select-String -Pattern "Test Run Successful.").Matches.Success
-		$testsRunTime = ($testOutput | Select-String -Pattern "Test execution time: (.*)").Matches.Groups[1].Value
 		$json = @{
-            TestsPassing= $testsSuccess
-			TotalTests= $matches.Groups[1].Value
-			TestsPassed= $matches.Groups[2].Value
-			TestsFailed= $matches.Groups[3].Value
-			TestsSkipped= $matches.Groups[4].Value
-            ExecutionTime=$testsRunTime
-            TestsPercentage= $matches.Groups[2].Value+"/"+$matches.Groups[1].Value
+            TestsPassing= $allTestsPassed
+			TotalTests= $totalTests
+			TestsPassed= $testsPassed
+			TestsFailed= $testsFailed
+			TestsSkipped= $testsSkipped
+            ExecutionTime= $testsRunTime.ToString() + " Seconds"
+            TestsPercentage= $testsPassed.ToString() +"/"+ $totalTests.ToString()
 		} | ConvertTo-Json
 		Set-Content .\Reports\UnitTestsSummary.json $json
         Log("Done with 'Write Test Results Json'", "info")
