@@ -2,10 +2,12 @@ param(
 	[Parameter(Position=0)][string[]]$tasksToRun
 	)
 $testOutput = ""
+$solutionPath = "..\TokenAuth.sln"
+$dotnetExePath = "C:\Program Files\dotnet\dotnet.exe"
 function test {
 	if(proceed){
         Log("Executing 'test'", "info")
-		$testOutput = ."C:\Program Files\dotnet\dotnet.exe" test "..\TokenAuth.sln"
+		$testOutput = .$dotnetExePath test $solutionPath
         Log("Done executing 'test'", "info")
         return $testOutput
 	}
@@ -35,7 +37,7 @@ function writeTestResultsJson {
 function build {
 	if(proceed){
         Write-Host "Executing 'build'"
-		."C:\Program Files\dotnet\dotnet.exe" build "..\TokenAuth.sln"
+		.$dotnetExePath build $solutionPath
         Write-Host "Done executing 'build'"
 	}
 }
@@ -49,12 +51,12 @@ function runCodeCoverageAnalysis {
 
         Write-Host "Doing debug/pdb build"
 		# running build with full debug type 
-		."C:\Program Files\dotnet\dotnet.exe" build "..\TokenAuth.sln" /p:DebugType=Full
+		.$dotnetExePath build $solutionPath /p:DebugType=Full
 
         if(proceed){
             Write-Host "Analyzing with OpenCover"
 		    # running opencover        
-	 	    .\OpenCover\OpenCover.Console.exe -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test ..\TokenAuth.sln --configuration Debug --no-build" -filter:"+[*]* -[*.Test*]*" -oldStyle -register:user -output:".\Reports\OpenCover.xml";
+	 	    .\OpenCover\OpenCover.Console.exe -target:$dotnetExePath -targetargs:"test $solutionPath --configuration Debug --no-build" -filter:"+[*]* -[*.Test*]*" -oldStyle -register:user -output:".\Reports\OpenCover.xml";
         }
 
         if(proceed){
@@ -67,7 +69,7 @@ function runCodeCoverageAnalysis {
 }
 
 function clean {
-    ."C:\Program Files\dotnet\dotnet.exe" clean "..\TokenAuth.sln"
+    .$dotnetExePath clean $solutionPath
 }
 
 function proceed {
