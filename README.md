@@ -13,6 +13,10 @@ asp.net core 2.0 webapi with authentication and authorization middleware with co
 <a href="https://raw.githubusercontent.com/abdulbeard/aspnet-core-webapi-auth-middleware/master/BuildTools/Reports/UnitTestsSummary.json" target="_blank">
 <img src="https://img.shields.io/badge/Build-Passing-brightgreen.svg" />
 </a>
+
+<a href="https://www.nuget.org/packages/MisturTee/1.0.0-alpha2" target="_blank">
+<img src="https://img.shields.io/badge/Release-v1.0.0--alpha2-blue.svg" />
+</a>
 </p>
 
 
